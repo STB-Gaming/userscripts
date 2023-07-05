@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         STBG Mobile Interface
 // @namespace    https://stb-gaming.github.io
-// @version      0.1.2
+// @version      0.1.3
 // @description  Play the games on mobile
 // @author       tumble1999
 // @run-at       document-start
@@ -31,6 +31,7 @@ max-width:100vw;
 	z-index: 100;
 	height: 50vh;
 	width: 100vw;
+	    touch-action: none;
 }
 
 #sky-remote-dpad {
@@ -274,7 +275,10 @@ max-width:100vw;
 				touch = e.targetTouches[0],
 
 				x = 2 * (touch.clientX - bounds.left) / bounds.width - 1,
-				y = 2 * (touch.clientY - bounds.top) / bounds.height - 1;
+				y = 2 * (touch.clientY - bounds.top) / bounds.height - 1,
+				deadZone = .2;
+			if (Math.abs(x) < deadZone) x = 0;
+			if (Math.abs(y) < deadZone) y = 0;
 			console.log({ x, y });
 			if (Math.sign(x) < 0) {
 				SkyRemote.releaseButton("right");
