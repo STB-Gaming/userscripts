@@ -60,7 +60,7 @@
 			return Object.keys(remote);
 		},
 		holdButton(key) {
-			if (listButtons().includes(key)) {
+			if (this.listButtons().includes(key)) {
 				heldButton = key;
 				triggerEvent("keydown", remote[key]);
 			}
