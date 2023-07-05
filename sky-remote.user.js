@@ -16,6 +16,7 @@
 	'use strict';
 	const uWindow = typeof unsafeWindow != 'undefined' ? unsafeWindow : window;
 
+	let heldButton = "";
 	let remote = {
 		"sky": 27,
 		"tv-guide": 65,
@@ -59,10 +60,16 @@
 			return Object.keys(remote);
 		},
 		holdButton(key) {
-			triggerEvent("keydown", remote[key]);
+			if (this.listButtons().includes(key)) {
+				heldButton = key;
+				triggerEvent("keydown", remote[key]);
+			}
 		},
 		releaseButton(key) {
-			triggerEvent("keyup", remote[key]);
+			if (heldButton === key) {
+				triggerEvent("keyup", remote[key]);
+				heldButton = "";
+			}
 		},
 		pressButton(key) {
 			this.holdButton(key);

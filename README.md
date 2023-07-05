@@ -1,10 +1,14 @@
-# STC Gaming Userscripts
-Userscripts to make the game more accesible
+# STB Gaming Userscripts
+Userscripts to make Denki's online Sky Games ports more accessible to a range of devices
 
-## How to install userscripts
+---
+
+## Installation
 
 ### PC
-> tba
+1. Install [Tampermonkey](https://www.tampermonkey.net/)
+2. Click the link to the userscript you want to install
+3. Tampermonkey should open a new tab with the userscript. Click _Install_ and confirm
 ### Mobile
 > tba
 ### FireTV
@@ -13,7 +17,8 @@ Userscripts to make the game more accesible
 ## Sky Remote
 > [sky remote.user.js](https://github.com/STB-Gaming/userscripts/raw/master/sky-remote.user.js)
 
-a library to help other user scripts press buttons on the sky remote
+A userscript that displays a graphical Sky remote, allowing the user to send inputs by pressing the buttons  
+Available to use on Denki's Sky Games ports
 
 ### Usage
 how to include it in other use scripts
