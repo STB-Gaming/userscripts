@@ -1,9 +1,17 @@
 # STC Gaming Userscripts
 Userscripts to make the game more accesible
 
+## How to install userscripts
+
+### PC
+> tba
+### Mobile
+> tba
+### FireTV
+> tba
 
 ## Sky Remote
-[sky remote.user.js](https://github.com/STB-Gaming/userscripts/raw/master/sky-remote.user.js)
+> [sky remote.user.js](https://github.com/STB-Gaming/userscripts/raw/master/sky-remote.user.js)
 a library to help other user scripts press buttons on the sky remote
 
 ### Usage
