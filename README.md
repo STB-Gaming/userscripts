@@ -14,10 +14,14 @@ Userscripts to make Denki's online Sky Games ports more accessible to a range of
 ### FireTV
 > tba
 
+## Mobile Gamepad
+> [sky remote.user.js](https://github.com/STB-Gaming/userscripts/raw/master/sky-remote-mobile.user.js)
+![](screenshots/mobile-gamepad.png)
+
 ## Sky Remote
 > [sky remote.user.js](https://github.com/STB-Gaming/userscripts/raw/master/sky-remote.user.js)
 
-A userscript that displays a graphical Sky remote, allowing the user to send inputs by pressing the buttons  
+A userscript that displays a graphical Sky remote, allowing the user to send inputs by pressing the buttons
 Available to use on Denki's Sky Games ports
 
 ### Usage
