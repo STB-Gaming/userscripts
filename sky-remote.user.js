@@ -58,15 +58,15 @@
 		listButtons() {
 			return Object.keys(remote);
 		},
-		keyDown(key) {
+		holdButton(key) {
 			triggerEvent("keydown", remote[key]);
 		},
-		keyUp(key) {
+		releaseButton(key) {
 			triggerEvent("keyup", remote[key]);
 		},
-		pressKey(key) {
-			this.keyDown(key);
-			setTimeout(() => this.keyUp(key), 500);
+		pressButton(key) {
+			this.holdButton(key);
+			setTimeout(() => this.releaseButton(key), 500);
 		}
 	};
 })();
