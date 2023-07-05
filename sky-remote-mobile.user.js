@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name         STBG Mobile Interface
 // @namespace    https://stb-gaming.github.io
-// @version      0.1.0
-// @description  A template for creating user scripts
+// @version      0.1.1
+// @description  Play the games on mobile
 // @author       tumble1999
 // @run-at       document-start
 // @match        https://denki.co.uk/sky/*
+// @match        https://stb-gaming.github.io/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=denki.co.uk
 // @require      https://github.com/STB-Gaming/userscripts/raw/master/sky-remote.user.js
 // @grant        GM_addStyle
