@@ -3,12 +3,11 @@
 // ==UserScript==
 // @name         STBG Sky Remote
 // @namespace    https://stb-gaming.github.io
-// @version      1.0.2
+// @version      1.0.3
 // @description  Creates fucntions to press sky remote buttons
 // @author       tumble199
 // @run-at       document-start
 // @match        https://denki.co.uk/sky/*
-// @match        https://stb-gaming.github.io/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=denki.co.uk
 // ==/UserScript==
 
