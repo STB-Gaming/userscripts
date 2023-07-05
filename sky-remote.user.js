@@ -3,7 +3,7 @@
 // ==UserScript==
 // @name         STBG Sky Remote
 // @namespace    https://stb-gaming.github.io
-// @version      1.0.0
+// @version      1.0.1
 // @description  Creates fucntions to press sky remote buttons
 // @author       tumble199
 // @run-at       document-start
@@ -24,8 +24,8 @@
 		"services": 68,
 		"interactive": 70,
 		"i": 71,
-		"Up": 73,
-		"Left": 74,
+		"up": 73,
+		"left": 74,
 		"down": 75,
 		"right": 76,
 		"select": 13,
