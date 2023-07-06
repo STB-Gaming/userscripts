@@ -3,7 +3,7 @@
 // ==UserScript==
 // @name         STBG Sky Remote
 // @namespace    https://stb-gaming.github.io
-// @version      1.0.3
+// @version      1.0.4
 // @description  Creates fucntions to press sky remote buttons
 // @author       tumble199
 // @run-at       document-start
@@ -16,7 +16,7 @@
 	'use strict';
 	const uWindow = typeof unsafeWindow != 'undefined' ? unsafeWindow : window;
 
-	let heldButton = "";
+	let heldButtons = [];
 	let remote = {
 		"sky": 27,
 		"tv-guide": 65,
@@ -61,14 +61,16 @@
 		},
 		holdButton(key) {
 			if (this.listButtons().includes(key)) {
-				heldButton = key;
-				triggerEvent("keydown", remote[key]);
+				let keyCode = remote[key];
+				heldButtons[keyCode] = true;
+				triggerEvent("keydown", keyCode);
 			}
 		},
 		releaseButton(key) {
-			if (heldButton === key) {
-				triggerEvent("keyup", remote[key]);
-				heldButton = "";
+			let keyCode = remote[key];
+			if (heldButtons[keyCode]) {
+				triggerEvent("keyup", keyCode);
+				heldButtons[keyCode] = false;
 			}
 		},
 		pressButton(key) {
