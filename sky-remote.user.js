@@ -3,11 +3,13 @@
 // ==UserScript==
 // @name         STBG Sky Remote
 // @namespace    https://stb-gaming.github.io
-// @version      1.0.4
+// @version      1.0.5
 // @description  Creates fucntions to press sky remote buttons
 // @author       tumble199
 // @run-at       document-start
 // @match        https://denki.co.uk/sky/*
+// @match        https://stb-gaming.github.io/*
+// @match        http://localhost:4000/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=denki.co.uk
 // ==/UserScript==
 
@@ -48,34 +50,41 @@
 		"8": 56,
 		"9": 57,
 	};
-
 	function triggerEvent(event, key) {
-		window.dispatchEvent(new KeyboardEvent(event, {
-			keyCode: key
+		document.dispatchEvent(new KeyboardEvent(event, {
+			keyCode: key,
+			bubbles: true,
+			cancelable: true,
+			composed: true
 		}));
-	}
-
-	uWindow.SkyRemote = {
+	};
+	let SkyRemote = {
 		listButtons() {
 			return Object.keys(remote);
 		},
-		holdButton(key) {
-			if (this.listButtons().includes(key)) {
-				let keyCode = remote[key];
+		holdButton(btn) {
+			if (this.listButtons().includes(btn)) {
+				let keyCode = remote[btn];
 				heldButtons[keyCode] = true;
 				triggerEvent("keydown", keyCode);
 			}
 		},
-		releaseButton(key) {
-			let keyCode = remote[key];
+		releaseButton(btn) {
+			let keyCode = remote[btn];
 			if (heldButtons[keyCode]) {
 				triggerEvent("keyup", keyCode);
 				heldButtons[keyCode] = false;
+
+
+				let fnName = "press" + btn.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join("");
+				if (uWindow[fnName])
+					uWindow[fnName].call();
 			}
 		},
-		pressButton(key) {
-			this.holdButton(key);
-			setTimeout(() => this.releaseButton(key), 500);
+		pressButton(btn) {
+			this.holdButton(btn);
+			setTimeout(() => this.releaseButton(btn), 500);
 		}
 	};
+	if (!uWindow.SkyRemote) uWindow.SkyRemote = SkyRemote;
 })();
