@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         STBG Controller Support Script
 // @namespace    https://stb-gaming.github.io
-// @version      0.1.0
+// @version      0.1.1
 // @description  A script that uses the JS Gamepad API to add controller support to Denki's online Sky Games
 // @author       cobaltgit
 // @run-at       document-start
@@ -29,37 +29,37 @@
 
         switch (true) {
             case buttons[12].pressed:
-                SkyRemote.pressButton("up"); // d-pad up
+                SkyRemote.holdButton("up"); // d-pad up
                 break;
             case buttons[13].pressed:
-                SkyRemote.pressButton("down"); // d-pad down
+                SkyRemote.holdButton("down"); // d-pad down
                 break;
             case buttons[15].pressed:
-                SkyRemote.pressButton("right"); // d-pad right
+                SkyRemote.holdButton("right"); // d-pad right
                 break;
             case buttons[14].pressed:
-                SkyRemote.pressButton("left"); // d-pad left
+                SkyRemote.holdButton("left"); // d-pad left
                 break;
             case buttons[9].pressed:
-                SkyRemote.pressButton("backup"); // start (back up)
+                SkyRemote.holdButton("backup"); // start (back up)
                 break;
             case buttons[0].pressed:
-                SkyRemote.pressButton("select"); // A (select)
+                SkyRemote.holdButton("select"); // A (select)
                 break;
             case buttons[1].pressed:
-                SkyRemote.pressButton("red"); // B (red)
+                SkyRemote.holdButton("red"); // B (red)
                 break;
             case buttons[2].pressed:
-                SkyRemote.pressButton("blue"); // X (blue)
+                SkyRemote.holdButton("blue"); // X (blue)
                 break;
             case buttons[3].pressed:
-                SkyRemote.pressButton("yellow"); // Y (yellow)
+                SkyRemote.holdButton("yellow"); // Y (yellow)
                 break;
             case buttons[8].pressed:
-                SkyRemote.pressButton("green"); // select (green)
+                SkyRemote.holdButton("green"); // select (green)
                 break;
             case buttons[11].pressed:
-                SkyRemote.pressButton("help"); // right stick down (help)
+                SkyRemote.holdButton("help"); // right stick down (help)
                 break;
             default:
                 SkyRemote.listButtons().forEach(button => SkyRemote.releaseButton(button));
