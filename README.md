@@ -14,16 +14,34 @@ Userscripts to make Denki's online Sky Games ports more accessible to a range of
 ### FireTV
 > tba
 
-## Mobile Gamepad
-> [sky remote.user.js](https://github.com/STB-Gaming/userscripts/raw/master/sky-remote-mobile.user.js)
+## Controller Support
+> [gamepad-support.user.js](https://github.com/STB-Gaming/userscripts/raw/master/gamepad-support.user.js)
 
+A userscript that adds controller support to Denki's online Sky Games ports, using the Javascript Gamepad API.
+
+### Button Mappings
+
+Below are the default controls for the Xbox 360 controller, translated to Sky remote buttons
+
+* A: Select
+* B: Red
+* X: Blue
+* Y: Yellow
+* Select: Green
+* Start: Back Up
+* Right Stick: Help
+
+## Mobile Gamepad
+> [sky-remote-mobile.user.js](https://github.com/STB-Gaming/userscripts/raw/master/sky-remote-mobile.user.js)
+
+A userscript that adds a virtual Sky Gamepad button layout to mobile browsers, with touch support for mobile devices
 ![](screenshots/mobile-gamepad.png)
 
 ## Sky Remote
-> [sky remote.user.js](https://github.com/STB-Gaming/userscripts/raw/master/sky-remote.user.js)
+> [sky-remote.user.js](https://github.com/STB-Gaming/userscripts/raw/master/sky-remote.user.js)
 
-A userscript that displays a graphical Sky remote, allowing the user to send inputs by pressing the buttons
-Available to use on Denki's Sky Games ports
+A userscript that adds functions to press Sky remote buttons
+
 
 ### Usage
 how to include it in other use scripts
