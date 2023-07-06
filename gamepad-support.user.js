@@ -15,7 +15,6 @@
 	'use strict';
 	const 
         uWindow = typeof unsafeWindow != 'undefined' ? unsafeWindow : window,
-        buttonNumbers = [12, 13, 15, 14, 9, 0, 1, 2, 3, 8, 11],
         buttonMapping = {
             12: "up",
             13: "down",
