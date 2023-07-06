@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         STBG Controller Support Script
 // @namespace    https://stb-gaming.github.io
-// @version      0.1.4
+// @version      0.2.0
 // @description  A script that uses the JS Gamepad API to add controller support to Denki's online Sky Games
 // @author       cobaltgit
 // @run-at       document-start
@@ -15,51 +15,35 @@
 	'use strict';
 	const 
         uWindow = typeof unsafeWindow != 'undefined' ? unsafeWindow : window,
-        buttonNumbers = [12, 13, 15, 14, 9, 0, 1, 2, 3, 8, 11];
+        buttonNumbers = [12, 13, 15, 14, 9, 0, 1, 2, 3, 8, 11],
+        buttonMapping = {
+            12: "up",
+            13: "down",
+            14: "left",
+            15: "right",
+            9: "backup",
+            0: "select",
+            1: "red",
+            2: "blue",
+            3: "yellow",
+            8: "green",
+            11: "help"
+        }
 
     let start, gamepad;
 
-    function mainLoop() {
+    function mainLoop() { // todo: non-linear input handling?
         let gamepads = navigator.getGamepads();
         if (!gamepads) return;
-
         gamepad = gamepads[0];
 
-        if (gamepad.buttons[12].pressed) {
-            SkyRemote.holdButton("up"); // d-pad up
-        } 
-        if (gamepad.buttons[13].pressed) {
-            SkyRemote.holdButton("down"); // d-pad down
-        }
-        if (gamepad.buttons[15].pressed) {
-            SkyRemote.holdButton("right"); // d-pad right
-        }
-        if (gamepad.buttons[14].pressed) {
-            SkyRemote.holdButton("left"); // d-pad left
-        }
-        if (gamepad.buttons[9].pressed) {
-            SkyRemote.pressButton("backup"); // start (back up)
-        }
-        if (gamepad.buttons[0].pressed) {
-            SkyRemote.pressButton("select"); // A (select)
-        }
-        if (gamepad.buttons[1].pressed) {
-            SkyRemote.pressButton("red"); // B (red)
-        }
-        if (gamepad.buttons[2].pressed) {
-            SkyRemote.pressButton("blue"); // X (blue)
-        }
-        if (gamepad.buttons[3].pressed) {
-            SkyRemote.pressButton("yellow"); // Y (yellow)
-        }
-        if (gamepad.buttons[8].pressed) {
-            SkyRemote.pressButton("green"); // select (green)
-        }
-        if (gamepad.buttons[11].pressed) {
-            SkyRemote.pressButton("help"); // right stick down (help)
-        }
-        if (!buttonNumbers.some(index => gamepad.buttons[index].pressed)) {
-            SkyRemote.listButtons().forEach(button => SkyRemote.releaseButton(button));
+        for (const index of Object.keys(buttonMapping)) {
+            if (gamepad.buttons[index].pressed) {
+                SkyRemote.holdButton(buttonMapping[index]);
+                break;
+            } else {
+                SkyRemote.releaseButton(buttonMapping[index]);
+            }
         }
         
         start = uWindow.requestAnimationFrame(mainLoop)
