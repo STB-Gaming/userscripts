@@ -91,7 +91,7 @@ let controls = [
 function createSkyRemote(funcs) {
 	document.addEventListener("keyup", event => {
 		for (const control of controls)
-			if (control.keys.includes(event.key) && control.function && window[control.function])
+			if (control.keys.includes(event.key) && control.function && funcs[control.function])
 				funcs[control.function]();
 	});
 
