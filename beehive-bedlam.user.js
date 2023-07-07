@@ -7,6 +7,7 @@
 // @run-at       document-start
 // @match        https://beehive-bedlam.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=beehive-bedlam.com/
+// @require      https://raw.githubusercontent.com/stb-gaming/userscripts/master/create-sky-remote.js
 // ==/UserScript==
 
 
@@ -18,8 +19,8 @@
 		positions = {
 			startGame: { x: .5, y: .5 },
 			menu: {
-				startGame: { x: .33, y: .70 },
-				selectLevel: { x: .33, y: .76 },
+				game: { x: .33, y: .70 },
+				//selectLevel: { x: .33, y: .76 }, // too big of a menu to implement
 				options: { x: .33, y: .82 }
 			}, options: {
 				back: { x: .33, y: .58 },
@@ -27,40 +28,43 @@
 				fullscreen: { x: .33, y: .68 },
 				colors: { x: .33, y: .73 },
 			}
-		}, currentAngle = 0;
+		}, menuPos = 0, currentAngle = 0, state = 0, lastMousePos = { x: .5, y: .5 };
 
-	uWindow.addEventListener("load", () => {
-		setTimeout(() => {
-			canvas = document.querySelector("canvas");
-			console.log("Collected canvas and bounds");
-		}, 2000);
-	});
-
-	function sendMouseEvent(event, { x, y }) {
+	function sendMouseEvent(event, { x, y } = {}) {
+		if (void 0 == x || void 0 == y) {
+			x = lastMousePos.x;
+			y = lastMousePos.y;
+		};
 		bounds = canvas.getBoundingClientRect();
 		canvas.dispatchEvent(new MouseEvent(event, {
 			clientX: bounds.left + x * bounds.width,
 			clientY: bounds.top + y * bounds.height
 		}));
+		lastMousePos = { x, y };
 	}
 
-	function mouseDown({ x, y }) {
+	function mouseDown({ x, y } = {}) {
 		console.log("pressing mouse at", { x, y });
 		sendMouseEvent("mousedown", { x, y });
 	}
-	function mouseUp({ x, y }) {
+	function mouseUp({ x, y } = {}) {
 		console.log("releasing mouse at", { x, y });
 		sendMouseEvent("mouseup", { x, y });
 	}
-	function mouseMove({ x, y }) {
+	function mouseMove({ x, y } = {}) {
 		console.log("moving mouse to", { x, y });
 		sendMouseEvent("mousemove", { x, y });
 	}
 
 
-	function click({ x, y }) {
+	function click({ x, y } = {}) {
 		mouseDown({ x, y });
-		setTimeout(() => mouseUp({ x, y }), 100);
+		return new Promise((res, rej) => {
+			setTimeout(() => {
+				mouseUp({ x, y });
+				res();
+			}, 100);
+		});
 	}
 
 	function collectPos() {
@@ -98,16 +102,121 @@
 		console.log("Starting Game");
 		currentAngle = 0;
 		mouseDown({ x: .5, y: .5 });
-		// setInterval(() => {
-		// 	moveGamePos(.1);
-		// }, 1000);
+		gotoGamePos(0);
 	}
 
-	function skipToGame() {
-		click(positions.startGame);
-		setTimeout(() => click(positions.menu.startGame), 250);
-		setTimeout(() => startGame(), 500);
+	async function skipToGame() {
+		await click(positions.startGame);
+		await click(positions.menu.startGame);
+		startGame();
 	}
+
+	function updateMenuPos() {
+		if (!["menu", "options"].includes(state)) return;
+		let menuOptions = Object.values(positions[state]);
+		if (menuPos < 0) {
+			menuPos = 0;
+		}
+		if (menuPos >= menuOptions.length) {
+			menuPos = menuOptions.length - 1;
+		}
+		mouseMove(menuOptions[menuPos]);
+	}
+
+	function up() {
+		switch (state) {
+			case "menu":
+			case "options":
+				menuPos--;
+				updateMenuPos();
+				break;
+		}
+
+	}
+
+	function down() {
+		switch (state) {
+			case "menu":
+			case "options":
+				menuPos++;
+				updateMenuPos();
+				break;
+		}
+
+	}
+
+	function left() {
+		if (state == "game") {
+			moveGamePos(-.05);
+		}
+	}
+
+	function right() {
+		if (state == "game") {
+			moveGamePos(.05);
+		}
+	}
+
+	async function select() {
+		switch (state) {
+			case "menu":
+			case "options":
+				let keys = Object.keys(positions[state]),
+					values = Object.values(positions[state]);
+				await click(values[menuPos]);
+				if (state == "menu") {
+					state = keys[menuPos];
+				}
+				if (state == "options" && keys[menuPos] == "back") {
+					state = "menu";
+				}
+				menuPos = 0;
+
+				if (state == "game") {
+					startGame();
+				} else {
+					updateMenuPos();
+				}
+
+				break;
+			case "game":
+				mouseUp();
+				setTimeout(() => {
+					mouseDown();
+					gotoGamePos(currentAngle);
+				}, 1000);
+				break;
+			default:
+				await click(positions.startGame);
+				state = "menu";
+				updateMenuPos();
+				break;
+		}
+
+	}
+
+	function backup() {
+
+	}
+
+
+
+	uWindow.addEventListener("load", () => {
+		setTimeout(() => {
+			canvas = document.querySelector("canvas");
+			console.log("Collected canvas");
+		}, 2000);
+		console.log("Setting up sky remote");
+		createSkyRemote({
+			pressUp: up,
+			pressDown: down,
+			pressLeft: left,
+			pressRight: right,
+			pressSelect: select,
+			pressBack: backup
+		});
+
+	});
 
 	let BeehiveBedlam = {
 		positions,
@@ -119,7 +228,8 @@
 		mouseMove,
 		gotoGamePos,
 		moveGamePos,
-		skipToGame
+		skipToGame,
+		left, right, up, down, select, backup, state
 	};
 
 	if (!uWindow.BeehiveBedlam) uWindow.BeehiveBedlam = BeehiveBedlam;
