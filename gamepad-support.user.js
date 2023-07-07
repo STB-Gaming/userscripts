@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         STBG Controller Support Script
 // @namespace    https://stb-gaming.github.io
-// @version      0.2.2
+// @version      0.2.3
 // @description  A script that uses the JS Gamepad API to add controller support to Denki's online Sky Games
 // @author       cobaltgit
 // @run-at       document-start
@@ -30,7 +30,10 @@
 			11: "help"
 		};
 
-	let start, gamepad;
+	let 
+        start, 
+        gamepad,
+        lastPressed = [] // track button states
 
 	function mainLoop() { // todo: non-linear input handling?
 		let gamepads = navigator.getGamepads();
@@ -38,11 +41,14 @@
 		gamepad = gamepads[0];
 
 		for (const index of Object.keys(buttonMapping)) {
-			if (gamepad.buttons[index].pressed) {
-				SkyRemote.holdButton(buttonMapping[index]);
-			} else {
-				SkyRemote.releaseButton(buttonMapping[index]);
-			}
+            if (lastPressed[index] != gamepad.buttons[index].pressed) {
+                if (gamepad.buttons[index].pressed) {
+                    SkyRemote.holdButton(buttonMapping[index]);
+                } else {
+                    SkyRemote.releaseButton(buttonMapping[index]);
+                }
+                lastPressed[index] = gamepad.buttons[index].pressed;
+            }
 		}
 
 		start = uWindow.requestAnimationFrame(mainLoop);
