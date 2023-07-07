@@ -73,12 +73,20 @@
 		});
 	}
 
-	function gotoGamePos(deg) {
+	function gotoGamePos(pos) {
+		bounds = canvas.getBoundingClientRect();
 		let origin = { x: .66, y: .67 },
-			radius = 15;
+			radius = {
+				x: .14 * bounds.width,
+				y: .53 * bounds.height
+			},
+			unit = {
+				x: Math.sin(pos * Math.PI / 2),
+				y: -Math.cos(pos * Math.PI / 2)
+			};
 		mouseMove({
-			x: origin.x + radius * Math.sin(deg),
-			y: origin.y + radius * Math.abs(Math.cos(deg))
+			x: origin.x + unit.x * radius.x / bounds.width,
+			y: origin.y + unit.y * radius.y / bounds.height
 		});
 	}
 
@@ -92,13 +100,13 @@
 		mouseDown({ x: .5, y: .5 });
 		// setInterval(() => {
 		// 	moveGamePos(.1);
-		// }, 100);
+		// }, 1000);
 	}
 
 	function skipToGame() {
 		click(positions.startGame);
-		setTimeout(() => click(positions.menu.startGame), 500);
-		setTimeout(() => startGame(), 1000);
+		setTimeout(() => click(positions.menu.startGame), 250);
+		setTimeout(() => startGame(), 500);
 	}
 
 	let BeehiveBedlam = {
