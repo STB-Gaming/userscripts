@@ -74,7 +74,7 @@
 
 	function gotoGamePos(deg) {
 		let origin = { x: .66, y: .67 },
-			radius = .5;
+			radius = 15;
 		mouseMove({
 			x: origin.x + radius * Math.sin(deg),
 			y: origin.y + radius * Math.abs(Math.cos(deg))
