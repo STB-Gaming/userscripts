@@ -27,8 +27,15 @@
 				music: { x: .33, y: .62 },
 				fullscreen: { x: .33, y: .68 },
 				colors: { x: .33, y: .73 },
+			},
+			game: {
+				pause: { x: .13, y: .85 }
+			},
+			pause: {
+				game: { x: .60, y: .46 },
+				menu: { x: .64, y: .53 },
 			}
-		}, menuPos = 0, currentAngle = 0, state = 0, lastMousePos = { x: .5, y: .5 };
+		}, menuPos = 0, currentAngle = 0, state, lastMousePos = { x: .5, y: .5 };
 
 	function sendMouseEvent(event, { x, y } = {}) {
 		if (void 0 == x || void 0 == y) {
@@ -112,7 +119,7 @@
 	}
 
 	function updateMenuPos() {
-		if (!["menu", "options"].includes(state)) return;
+		if (!["menu", "options", "pause"].includes(state)) return;
 		let menuOptions = Object.values(positions[state]);
 		if (menuPos < 0) {
 			menuPos = 0;
@@ -127,6 +134,7 @@
 		switch (state) {
 			case "menu":
 			case "options":
+			case "pause":
 				menuPos--;
 				updateMenuPos();
 				break;
@@ -138,6 +146,7 @@
 		switch (state) {
 			case "menu":
 			case "options":
+			case "pause":
 				menuPos++;
 				updateMenuPos();
 				break;
@@ -161,10 +170,11 @@
 		switch (state) {
 			case "menu":
 			case "options":
+			case "pause":
 				let keys = Object.keys(positions[state]),
 					values = Object.values(positions[state]);
 				await click(values[menuPos]);
-				if (state == "menu") {
+				if (["menu", "pause"].includes(state)) {
 					state = keys[menuPos];
 				}
 				if (state == "options" && keys[menuPos] == "back") {
@@ -195,8 +205,14 @@
 
 	}
 
-	function backup() {
-
+	async function backup() {
+		if (state == "game") {
+			mouseUp();
+			await click(positions.game.pause);
+			state = "pause";
+			menuPos = 0;
+			updateMenuPos();
+		}
 	}
 
 

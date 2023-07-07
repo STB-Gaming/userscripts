@@ -6,6 +6,7 @@
 // @author       cobaltgit
 // @run-at       document-start
 // @match        https://denki.co.uk/sky/*
+// @match        https://beehive-bedlam.com/*
 // @match        https://stb-gaming.github.io/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=denki.co.uk
 // @require      https://github.com/STB-Gaming/userscripts/raw/master/sky-remote.user.js
@@ -30,10 +31,10 @@
 			11: "help"
 		};
 
-	let 
-        start, 
-        gamepad,
-        lastPressed = [] // track button states
+	let
+		start,
+		gamepad,
+		lastPressed = []; // track button states
 
 	function mainLoop() { // todo: non-linear input handling?
 		let gamepads = navigator.getGamepads();
@@ -41,14 +42,14 @@
 		gamepad = gamepads[0];
 
 		for (const index of Object.keys(buttonMapping)) {
-            if (lastPressed[index] != gamepad.buttons[index].pressed) {
-                if (gamepad.buttons[index].pressed) {
-                    SkyRemote.holdButton(buttonMapping[index]);
-                } else {
-                    SkyRemote.releaseButton(buttonMapping[index]);
-                }
-                lastPressed[index] = gamepad.buttons[index].pressed;
-            }
+			if (lastPressed[index] != gamepad.buttons[index].pressed) {
+				if (gamepad.buttons[index].pressed) {
+					SkyRemote.holdButton(buttonMapping[index]);
+				} else {
+					SkyRemote.releaseButton(buttonMapping[index]);
+				}
+				lastPressed[index] = gamepad.buttons[index].pressed;
+			}
 		}
 
 		start = uWindow.requestAnimationFrame(mainLoop);
