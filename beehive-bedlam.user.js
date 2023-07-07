@@ -3,7 +3,7 @@
 // @namespace    https://stb-gaming.github.io
 // @version      0.0.1
 // @description  A userscript that makes the online Beehive Bedlam remake compatible with STBG's standardised controls
-// @author       tumble1999, cobaltgit
+// @author       tumble1999
 // @run-at       document-start
 // @match        https://beehive-bedlam.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=beehive-bedlam.com/
