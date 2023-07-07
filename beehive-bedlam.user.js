@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name         STBG Beedive Bedlam
+// @name         STBG Beehive Bedlam
 // @namespace    https://stb-gaming.github.io
 // @version      0.0.1
-// @description  A template for creating user scripts
-// @author       You
+// @description  A userscript that makes the online Beehive Bedlam remake compatible with STBG's standardised controls
+// @author       tumble1999, cobaltgit
 // @run-at       document-start
 // @match        https://beehive-bedlam.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=beehive-bedlam.com/
@@ -27,7 +27,8 @@
 				fullscreen: { x: .33, y: .68 },
 				colors: { x: .33, y: .73 },
 			}
-		}, currentAngle = 0;;
+		}, currentAngle = 0;
+
 	uWindow.addEventListener("load", () => {
 		setTimeout(() => {
 			canvas = document.querySelector("canvas");
@@ -100,7 +101,7 @@
 		setTimeout(() => startGame(), 1000);
 	}
 
-	let BeehiveBedlum = {
+	let BeehiveBedlam = {
 		positions,
 		mouseDown,
 		mouseUp,
@@ -113,7 +114,5 @@
 		skipToGame
 	};
 
-	if (!uWindow.BeehiveBedlum) uWindow.BeehiveBedlum = BeehiveBedlum;
-
-
+	if (!uWindow.BeehiveBedlam) uWindow.BeehiveBedlam = BeehiveBedlam;
 })();
