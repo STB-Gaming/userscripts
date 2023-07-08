@@ -1,13 +1,14 @@
 // ==UserScript==
 // @name         STBG Beehive Bedlam
 // @namespace    https://stb-gaming.github.io
-// @version      0.0.2
+// @version      0.0.3
 // @description  A userscript that makes the online Beehive Bedlam remake compatible with STBG's standardised controls
 // @author       tumble1999
 // @run-at       document-start
 // @match        https://beehive-bedlam.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=beehive-bedlam.com/
 // @require      https://raw.githubusercontent.com/stb-gaming/userscripts/master/create-sky-remote.js
+// NOTICE: WHEN REQUIRING THIS SCRIPT DONT REQURIE THE ABOVE SCRIPT IF YOU INTEND TO USE YOUR OWN CONTROL SCHEME
 // ==/UserScript==
 
 
@@ -222,15 +223,17 @@
 			canvas = document.querySelector("canvas");
 			console.log("Collected canvas");
 		}, 2000);
-		console.log("Setting up sky remote");
-		createSkyRemote({
-			pressUp: up,
-			pressDown: down,
-			pressLeft: left,
-			pressRight: right,
-			pressSelect: select,
-			pressBack: backup
-		});
+		if (void 0 != createSkyRemote) {
+			console.log("Setting up sky remote");
+			createSkyRemote({
+				pressUp: up,
+				pressDown: down,
+				pressLeft: left,
+				pressRight: right,
+				pressSelect: select,
+				pressBack: backup
+			});
+		}
 
 	});
 
