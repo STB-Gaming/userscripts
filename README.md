@@ -10,7 +10,13 @@ Userscripts to make Denki's online Sky Games ports more accessible to a range of
 2. Click the link to the userscript you want to install
 3. Tampermonkey should open a new tab with the userscript. Click _Install_ and confirm
 ### Mobile
+#### Android
+1. Install Firefox Mobile
+2. install tampermonkey addon
+3. install userscript
+#### iOS
 > tba
+
 ### FireTV
 > tba
 
@@ -36,6 +42,18 @@ Below are the default controls for the Xbox 360 controller, translated to Sky re
 
 A userscript that adds a virtual Sky Gamepad button layout to mobile browsers, with touch support for mobile devices
 ![](screenshots/mobile-gamepad.png)
+
+
+
+## Beehive Bedlam
+> [beehive-bedlam.user.js](https://github.com/STB-Gaming/userscripts/raw/master/beehive-bedlam.user.js)
+
+Adds programmatic functions to https://beehive-bedlam.com/
+if installed standalone it adds keyboard support.
+
+```js
+// @require https://github.com/STB-Gaming/userscripts/raw/master/beehive-bedlam.user.js
+```
 
 ## Sky Remote
 > [sky-remote.user.js](https://github.com/STB-Gaming/userscripts/raw/master/sky-remote.user.js)

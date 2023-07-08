@@ -3,20 +3,23 @@
 // ==UserScript==
 // @name         STBG Sky Remote
 // @namespace    https://stb-gaming.github.io
-// @version      1.0.5
+// @version      1.1.0
 // @description  Creates fucntions to press sky remote buttons
 // @author       tumble199
 // @run-at       document-start
 // @match        https://denki.co.uk/sky/*
 // @match        https://stb-gaming.github.io/*
+// @match        https://beehive-bedlam.com/*
 // @match        http://localhost:4000/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=denki.co.uk
+// @require https://github.com/STB-Gaming/userscripts/raw/master/beehive-bedlam.user.js
 // ==/UserScript==
 
 
 (function () {
 	'use strict';
 	const uWindow = typeof unsafeWindow != 'undefined' ? unsafeWindow : window;
+	if (typeof uWindow.SkyRemote !== "undefined") return;
 
 	let heldButtons = [];
 	let remote = {
@@ -79,6 +82,9 @@
 				let fnName = "press" + btn.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join("");
 				if (uWindow[fnName])
 					uWindow[fnName].call();
+				if (typeof BeehiveBedlam !== "undefined" && typeof BeehiveBedlam[fnName] !== "undefined") {
+					BeehiveBedlam[fnName].call();
+				}
 			}
 		},
 		pressButton(btn) {
@@ -86,5 +92,6 @@
 			setTimeout(() => this.releaseButton(btn), 500);
 		}
 	};
-	if (!uWindow.SkyRemote) uWindow.SkyRemote = SkyRemote;
+
+	uWindow.SkyRemote = SkyRemote;
 })();
