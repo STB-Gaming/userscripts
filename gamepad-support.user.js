@@ -36,7 +36,7 @@
 		gamepad,
 		lastPressed = []; // track button states
 
-	function mainLoop() { // todo: non-linear input handling?
+	function mainLoop() { // todo: add analogue stick support (axes should map to arrow buttons)
 		let gamepads = navigator.getGamepads();
 		if (!gamepads) return;
 		gamepad = gamepads[0];
