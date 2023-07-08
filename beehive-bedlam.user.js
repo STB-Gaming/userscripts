@@ -15,6 +15,7 @@
 (function () {
 	'use strict';
 	const uWindow = typeof unsafeWindow != 'undefined' ? unsafeWindow : window;
+	if (uWindow.BeehiveBedlam) return;
 
 	let canvas, bounds,
 		positions = {
@@ -223,7 +224,7 @@
 			canvas = document.querySelector("canvas");
 			console.log("Collected canvas");
 		}, 2000);
-		if (void 0 != createSkyRemote) {
+		if (typeof createSkyRemote !== 'undefined' || createSkyRemote !== null) {
 			console.log("Setting up sky remote");
 			createSkyRemote({
 				pressUp: up,
@@ -251,5 +252,5 @@
 		left, right, up, down, select, backup, state
 	};
 
-	if (!uWindow.BeehiveBedlam) uWindow.BeehiveBedlam = BeehiveBedlam;
+	uWindow.BeehiveBedlam = BeehiveBedlam;
 })();
