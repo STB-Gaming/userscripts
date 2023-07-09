@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         STBG Sky Remote API
 // @namespace    https://stb-gaming.github.io
-// @version      1.1.3
+// @version      1.1.2
 // @description  The ultimate Sky Remote API (hopefully) containing everything to simulate a sky remote in your browser
 // @author       Tumble
-// @run-at       document-end
+// @run-at       document-start
 // @match        *://*
 // @icon         https://stb-gaming.github.io/assets/img/stb-logo.webp
 // @require      https://github.com/STB-Gaming/userscripts/raw/master/beehive-bedlam.user.js
@@ -17,7 +17,7 @@
 	const IS_USERSCRIPT = typeof GM_info != 'undefined';
 	const IS_THIS_USERSCRIPT = IS_USERSCRIPT ? GM_info.script.name == 'STBG Sky Remote API' : false;
 	const IS_THIS_USERSCRIPT_DEV = IS_THIS_USERSCRIPT && GM_info.scriptUpdateURL.startsWith("file://");
-	const VERSION = [1, 1, 3];
+	const VERSION = [1, 1, 4];
 
 
 	if (uWindow.SkyRemote) {
@@ -28,9 +28,7 @@
 Try reinstalling all active userscripts.`);
 				break;
 			case -1: // this is older
-				if (IS_THIS_USERSCRIPT_DEV)
-					console.info(`[SKY REMOTE] You must be developing a new version. Good Luck`);
-				else if (IS_THIS_USERSCRIPT)
+				if (IS_THIS_USERSCRIPT)
 					console.warn(`[SKY REMOTE] The 'STBG Sky Remote API' (the userscript) is out of date.
 Update this userscript.`);
 				else if (IS_USERSCRIPT)
@@ -38,7 +36,7 @@ Update this userscript.`);
 Try reinstalling this mod.`);
 				else
 					console.warn(`[SKY REMOTE] This website using an older version of the sky remote api.
-Try refeshing the website. or contact the website owner`);
+Try refreshing the website. or contact the website owner`);
 				break;
 		}
 	}
