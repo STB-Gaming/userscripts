@@ -1,14 +1,13 @@
 // ==UserScript==
 // @name         STBG Beehive Bedlam
 // @namespace    https://stb-gaming.github.io
-// @version      0.1.1
+// @version      0.1.2
 // @description  A userscript that makes the online Beehive Bedlam remake compatible with STBG's standardised controls
 // @author       tumble1999
 // @run-at       document-start
 // @match        https://beehive-bedlam.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=beehive-bedlam.com/
-// @require      https://raw.githubusercontent.com/stb-gaming/userscripts/master/create-sky-remote.js
-// NOTICE: WHEN REQUIRING THIS SCRIPT DONT REQURIE THE ABOVE SCRIPT IF YOU INTEND TO USE YOUR OWN CONTROL SCHEME
+// @require      https://github.com/STB-Gaming/userscripts/raw/master/sky-remote.user.js
 // ==/UserScript==
 
 
@@ -305,11 +304,11 @@
 				}
 			});
 		}, 2000);
-		if (typeof createSkyRemote === "undefined") {
-			console.log("No sky remote was created");
+		if (typeof SkyRemote === "undefined") {
+			console.log("Sky Remote API is eequired");
 		} else {
 			console.log("Setting up sky remote");
-			createSkyRemote({
+			SkyRemote.createSkyRemote({
 				pressUp,
 				pressDown,
 				pressLeft,
