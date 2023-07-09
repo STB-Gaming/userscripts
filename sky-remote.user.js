@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         STBG Sky Remote API
 // @namespace    https://stb-gaming.github.io
-// @version      1.1.2
+// @version      1.1.3
 // @description  The ultimate Sky Remote API (hopefully) containing everything to simulate a sky remote in your browser
 // @author       Tumble
 // @run-at       document-start
@@ -17,7 +17,7 @@
 	const IS_USERSCRIPT = typeof GM_info != 'undefined';
 	const IS_THIS_USERSCRIPT = IS_USERSCRIPT ? GM_info.script.name == 'STBG Sky Remote API' : false;
 	const IS_THIS_USERSCRIPT_DEV = IS_THIS_USERSCRIPT && GM_info.scriptUpdateURL.startsWith("file://");
-	const VERSION = [1, 1, 4];
+	const VERSION = [1, 1, 3];
 
 
 	if (uWindow.SkyRemote) {
