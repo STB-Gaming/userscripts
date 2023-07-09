@@ -6,7 +6,7 @@
 // @author       Tumble
 // @run-at       document-end
 // @match        *://*
-// @icon         https://www.google.com/s2/favicons?sz=64&domain=stb-gaming.github.io
+// @icon         https://stb-gaming.github.io/assets/img/stb-logo.webp
 // @require      https://github.com/STB-Gaming/userscripts/raw/master/beehive-bedlam.user.js
 // ==/UserScript==
 
