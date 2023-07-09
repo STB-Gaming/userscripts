@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         STBG Mobile Interface
 // @namespace    https://stb-gaming.github.io
-// @version      0.1.6
+// @version      0.1.7
 // @description  A userscript that adds a button layout based on the Sky Gamepad to mobile browsers, adding touch support for mobile devices
 // @author       tumble1999
 // @run-at       document-start
@@ -306,6 +306,11 @@ justify-content: flex-start;
 			queuedLogs.push(logLine);
 		}
 	}
+
+	uWindow.getQueuedLogs = function () {
+		console.log(queuedLogs.map(l => l.classList.toString() + ": " + l.innerText).join(`
+		`));
+	};
 
 	Object.keys(log).forEach(type => {
 		uWindow.console[type] = logLog.bind(null, type);
