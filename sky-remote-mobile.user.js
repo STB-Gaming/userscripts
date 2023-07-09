@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         STBG Mobile Interface
 // @namespace    https://stb-gaming.github.io
-// @version      0.1.3
+// @version      0.1.4
 // @description  A userscript that adds a button layout based on the Sky Gamepad to mobile browsers, adding touch support for mobile devices
 // @author       tumble1999
 // @run-at       document-start
@@ -11,7 +11,17 @@
 // @grant        GM_addStyle
 // ==/UserScript==
 
-let css = `
+
+
+
+(function () {
+	'use strict';
+
+
+
+	const uWindow = typeof unsafeWindow != 'undefined' ? unsafeWindow : window;
+
+	let css = `
 html,body {
 	margin:0;
 	padding:0;
@@ -137,7 +147,8 @@ max-width:100vw;
 #sky-remote-yellow,
 #sky-remote-blue,
 #sky-remote-backup,
-#sky-remote-help {
+#sky-remote-help,
+#sky-remote-log {
 	position: absolute;
 	border-radius: 50%;
 	height: 60px;
@@ -185,6 +196,22 @@ max-width:100vw;
     width: 80px;
     height: 30px;
 }
+#sky-remote-log {
+	   background-color: black;
+    margin: auto;
+    right: 10px;
+    top: 5px;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-weight: bold;
+    font-family: sans-serif;
+    width: 80px;
+    height: 35px;
+	text-align:center;
+}
 
 #sky-remote-green {
 	background-color: green;
@@ -202,8 +229,48 @@ max-width:100vw;
 	background-color: blue;
 	right: 15px;
 	bottom: 226px;
-}`,
-	html = `
+}
+#game-log-container {
+    position: absolute;
+    left: 0;
+	bottom: 50vh;
+    height: 50vh;
+    width: 100vw;
+    background-color: white;
+	font-family: monospace;
+
+ display: flex;
+flex-direction: column-reverse;
+justify-content: flex-start;
+    overflow-y: scroll;
+}
+
+#game-log p {
+	margin: 0;
+    border: solid 0.15em;
+	border-color: #ffffff;
+
+}
+
+#game-log .info {
+	color:blue
+}
+#game-log .warn {
+	color:#f2ab26;
+	background-color:#332b00;
+	border-color: #665500;
+}
+#game-log .error {
+	color:#f17678;
+	background-color:#290000;
+	border-color: #5c0000;
+}
+
+`,
+		html = `
+		<div id="game-log-container" style="display:none">
+		<div id="game-log"></div>
+		</div>
 <div id="sky-remote">
 		<div id="sky-remote-dpad">
 			<div id="sky-remote-dpad-up"></div>
@@ -217,17 +284,36 @@ max-width:100vw;
 		<div id="sky-remote-red"></div>
 		<div id="sky-remote-backup"><span>back up</span></div>
 		<div id="sky-remote-help"><span>help</span></div>
+		<div id="sky-remote-help"><span>help</span></div>
+		<div id="sky-remote-log"><span>game log</span></div>
 		<div id="sky-remote-select"><span>select</span></div>
 	</div>
 `;
 
+	let log = (function () {
+		let { log, info, warn, error } = uWindow.console;
+		return { log, info, warn, error };
+	})(),
+		queuedLogs = [];
+	function logLog(type, ...args) {
+		log[type](...args);
+		let logLine = document.createElement("p");
+		logLine.classList.add(type);
+		logLine.innerText = args.join(" ");
+		if (document.getElementById("game-log")) {
+			document.getElementById("game-log").appendChild(logLine);
+		} else {
+			queuedLogs.push(logLine);
+		}
+	}
 
-(function () {
-	'use strict';
+	Object.keys(log).forEach(type => {
+		uWindow.console[type] = logLog.bind(null, type);
+	});
 
 	function setupControls() {
 		let select = document.getElementById("sky-remote-select");
-		console.log(select);
+		//console.log(select);
 
 		[
 			{
@@ -266,6 +352,12 @@ max-width:100vw;
 				SkyRemote.releaseButton(b.button);
 			});
 		});
+		let toggleLog = () => {
+			let logContainer = document.getElementById("game-log-container");
+			console.log(logContainer);
+			logContainer.style.display = logContainer.style.display ? null : "none";
+		};
+		document.getElementById("sky-remote-log").addEventListener("touchend", toggleLog);
 
 		let dpad = document.getElementById("sky-remote-dpad");
 
@@ -306,8 +398,6 @@ max-width:100vw;
 		});
 	}
 
-	const uWindow = typeof unsafeWindow != 'undefined' ? unsafeWindow : window;
-
 
 	var meta = document.createElement('meta');
 	meta.name = "viewport";
@@ -323,6 +413,7 @@ max-width:100vw;
 		let test = document.createElement("span");
 		test.innerHTML = html;
 		document.body.appendChild(test);
+		document.getElementById("game-log").append(...queuedLogs);
 
 		setupControls();
 
