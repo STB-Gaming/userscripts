@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         STBG Beehive Bedlam
 // @namespace    https://stb-gaming.github.io
-// @version      0.1.2
+// @version      0.1.3
 // @description  A userscript that makes the online Beehive Bedlam remake compatible with STBG's standardised controls
 // @author       tumble1999
 // @run-at       document-start
@@ -14,7 +14,7 @@
 (function () {
 	'use strict';
 	const uWindow = typeof unsafeWindow != 'undefined' ? unsafeWindow : window;
-	if (typeof uWindow.BeehiveBedlam !== "undefined" && location.href !== "https://beehive-bedlam.com/") return;
+	if (typeof uWindow.BeehiveBedlam !== "undefined" || location.href !== "https://beehive-bedlam.com/") return;
 
 	let canvas, bounds,
 		positions = {
@@ -45,6 +45,7 @@
 		};
 		if (typeof canvas == "undefined") {
 			console.log("Not ready yet");
+			return;
 		}
 		bounds = canvas.getBoundingClientRect();
 		canvas.dispatchEvent(new MouseEvent(event, {
@@ -80,6 +81,7 @@
 
 	function collectPos() {
 		let pos, collected = {}, props = ["x", "y", "width", "height"], p = 0;
+		if (typeof canvas == 'undefined') return;
 
 		function updateBounds(update) {
 			if (update) {
@@ -117,6 +119,7 @@
 	}
 
 	function gotoGamePos(pos) {
+		if (typeof canvas == 'undefined') return;
 		bounds = canvas.getBoundingClientRect();
 		let origin = { x: .66, y: .67 },
 			radius = {
@@ -257,6 +260,7 @@
 	uWindow.addEventListener("load", () => {
 		setTimeout(() => {
 			canvas = document.querySelector("canvas");
+			if (typeof canvas == 'undefined') return;
 			console.log("Collected canvas");
 
 			canvas.addEventListener("mouseup", e => {
