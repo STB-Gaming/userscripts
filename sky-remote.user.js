@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         STBG Sky Remote API
 // @namespace    https://stb-gaming.github.io
-// @version      1.1.2
+// @version      1.1.3
 // @description  The ultimate Sky Remote API (hopefully) containing everything to simulate a sky remote in your browser
 // @author       Tumble
-// @run-at       document-start
+// @run-at       document-end
 // @match        *://*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=stb-gaming.github.io
 // @require      https://github.com/STB-Gaming/userscripts/raw/master/beehive-bedlam.user.js
@@ -17,23 +17,22 @@
 	const IS_USERSCRIPT = typeof GM_info != 'undefined';
 	const IS_THIS_USERSCRIPT = IS_USERSCRIPT ? GM_info.script.name == 'STBG Sky Remote API' : false;
 	const IS_THIS_USERSCRIPT_DEV = IS_THIS_USERSCRIPT && GM_info.scriptUpdateURL.startsWith("file://");
-	const VERSION = [1, 1, 2];
+	const VERSION = [1, 1, 3];
 
 
 	if (uWindow.SkyRemote) {
 		let comp = (a, b) => (a < b) - (b < a);
 		switch (comp(uWindow.SkyRemote.version, VERSION)) {
 			case 1: // this is newer
-				if (IS_THIS_USERSCRIPT_DEV)
-					console.info(`[SKY REMOTE] You must be developing a new version. Good Luck`);
-				else
-					console.warn(`[SKY REMOTE] There are userscripts that are using an older version of the sky remote api.
+				console.warn(`[SKY REMOTE] There are userscripts that are using an older version of the sky remote api.
 Try reinstalling all active userscripts.`);
 				break;
 			case -1: // this is older
-				if (IS_THIS_USERSCRIPT)
+				if (IS_THIS_USERSCRIPT_DEV)
+					console.info(`[SKY REMOTE] You must be developing a new version. Good Luck`);
+				else if (IS_THIS_USERSCRIPT)
 					console.warn(`[SKY REMOTE] The 'STBG Sky Remote API' (the userscript) is out of date.
-Update this usercript.`);
+Update this userscript.`);
 				else if (IS_USERSCRIPT)
 					console.warn(`[SKY REMOTE] '${GM_info.script.name}' using an older version of the sky remote api.
 Try reinstalling this mod.`);
