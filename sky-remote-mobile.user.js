@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         STBG Mobile Interface
 // @namespace    https://stb-gaming.github.io
-// @version      0.1.4
+// @version      0.1.5
 // @description  A userscript that adds a button layout based on the Sky Gamepad to mobile browsers, adding touch support for mobile devices
 // @author       tumble1999
 // @run-at       document-start
@@ -268,7 +268,7 @@ justify-content: flex-start;
 
 `,
 		html = `
-		<div id="game-log-container" style="display:none">
+		<div id="game-log-container" >
 		<div id="game-log"></div>
 		</div>
 <div id="sky-remote">
@@ -309,6 +309,23 @@ justify-content: flex-start;
 
 	Object.keys(log).forEach(type => {
 		uWindow.console[type] = logLog.bind(null, type);
+	});
+
+
+
+	GM_addStyle(css);
+
+
+	uWindow.addEventListener("load", () => {
+		let test = document.createElement("span");
+		test.innerHTML = html;
+		document.body.appendChild(test);
+		document.getElementById("game-log").append(...queuedLogs);
+
+
+		setupControls();
+
+
 	});
 
 	function setupControls() {
@@ -358,6 +375,7 @@ justify-content: flex-start;
 			logContainer.style.display = logContainer.style.display ? null : "none";
 		};
 		document.getElementById("sky-remote-log").addEventListener("touchend", toggleLog);
+		toggleLog();
 
 		let dpad = document.getElementById("sky-remote-dpad");
 
@@ -405,18 +423,4 @@ justify-content: flex-start;
 	document.getElementsByTagName('head')[0].appendChild(meta);
 
 	//document.body.innerHTML += html;
-
-	GM_addStyle(css);
-
-
-	uWindow.addEventListener("load", () => {
-		let test = document.createElement("span");
-		test.innerHTML = html;
-		document.body.appendChild(test);
-		document.getElementById("game-log").append(...queuedLogs);
-
-		setupControls();
-
-
-	});
 })();
