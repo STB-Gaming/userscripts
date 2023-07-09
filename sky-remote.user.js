@@ -4,7 +4,7 @@
 // @version      1.1.3
 // @description  The ultimate Sky Remote API (hopefully) containing everything to simulate a sky remote in your browser
 // @author       Tumble
-// @run-at       document-end
+// @run-at       document-start
 // @match        *://*
 // @icon         https://stb-gaming.github.io/assets/img/stb-logo.webp
 // @require      https://github.com/STB-Gaming/userscripts/raw/master/beehive-bedlam.user.js
