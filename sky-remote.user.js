@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name         STBG Sky Remote API
 // @namespace    https://stb-gaming.github.io
-// @version      1.1.1
+// @version      1.1.2
 // @description  The ultimate Sky Remote API (hopefully) containing everything to simulate a sky remote in your browser
 // @author       Tumble
 // @run-at       document-start
-// @match        *://*.*
+// @match        *://*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=stb-gaming.github.io
 // @require      https://github.com/STB-Gaming/userscripts/raw/master/beehive-bedlam.user.js
 // ==/UserScript==
@@ -14,9 +14,35 @@
 (function () {
 	'use strict';
 	const uWindow = typeof unsafeWindow != 'undefined' ? unsafeWindow : window;
+	const IS_USERSCRIPT = typeof GM_info != 'undefined';
+	const IS_THIS_USERSCRIPT = IS_USERSCRIPT ? GM_info.script.name == 'STBG Sky Remote API' : false;
+	const IS_THIS_USERSCRIPT_DEV = IS_THIS_USERSCRIPT && GM_info.scriptUpdateURL.startsWith("file://");
+	const VERSION = [1, 1, 2];
 
-	// Allow multiple things to load this script and it to not be a problem
-	if (typeof uWindow.SkyRemote != 'undefined') return;
+
+	if (uWindow.SkyRemote) {
+		let comp = (a, b) => (a < b) - (b < a);
+		switch (comp(uWindow.SkyRemote.version, VERSION)) {
+			case 1: // this is newer
+				if (IS_THIS_USERSCRIPT_DEV)
+					console.info(`[SKY REMOTE] You must be developing a new version. Good Luck`);
+				else
+					console.warn(`[SKY REMOTE] There are userscripts that are using an older version of the sky remote api.
+Try reinstalling all active userscripts.`);
+				break;
+			case -1: // this is older
+				if (IS_THIS_USERSCRIPT)
+					console.warn(`[SKY REMOTE] The 'STBG Sky Remote API' (the userscript) is out of date.
+Update this usercript.`);
+				else if (IS_USERSCRIPT)
+					console.warn(`[SKY REMOTE] '${GM_info.script.name}' using an older version of the sky remote api.
+Try reinstalling this mod.`);
+				else
+					console.warn(`[SKY REMOTE] This website using an older version of the sky remote api.
+Try refeshing the website. or contact the website owner`);
+				break;
+		}
+	}
 
 	let heldButtons = [];
 	let remote = {
@@ -152,6 +178,13 @@
 		if (!new.target) return console.error("Use 'new' with this function");
 	}
 
+	SkyRemote.prototype.version = VERSION;
+
+	SkyRemote.prototype.printVersionInfo = function () {
+		console.log(`[STB Gaming Sky Remote API]
+Created by: Tumble
+Version: ${this.version.join(".")} (${IS_THIS_USERSCRIPT_DEV ? "Development" : IS_THIS_USERSCRIPT ? "Userscript" : IS_USERSCRIPT ? "Userscript @require" : "Website <script>"})`);
+	};
 
 	SkyRemote.prototype.listButtons = function () {
 		return Object.keys(remote);
