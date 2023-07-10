@@ -1,10 +1,14 @@
 // ==UserScript==
 // @name         STBG Sky Remote API
 // @namespace    https://stb-gaming.github.io
-// @version      1.2.1
+// @version      1.3.0
 // @description  The ultimate Sky Remote API (hopefully) containing everything to simulate a sky remote in your browser
 // @author       Tumble
 // @run-at       document-start
+// @match        https://denki.co.uk/sky/*
+// @match        https://stb-gaming.github.io/*
+// @match        https://beehive-bedlam.com/*
+// @match        http://localhost:4000/*
 // @match        *://*
 // @icon         https://stb-gaming.github.io/assets/img/stb-logo.webp
 // @require      https://github.com/STB-Gaming/userscripts/raw/master/beehive-bedlam.user.js
@@ -41,16 +45,13 @@ Try refreshing the website. or contact the website owner`);
 		}
 	}
 
-	function triggerEvent(event, key) {
-		document.dispatchEvent(new KeyboardEvent(event, {
-			keyCode: key,
-			bubbles: true,
-			cancelable: true,
-			composed: true
-		}));
-	};
+
 	function SkyRemote(bindings) {
 		if (!new.target) return console.error("Use 'new' with this function");
+		if (!bindings || !bindings.length) {
+			throw "[SKY REMOTE] No bindings were provided";
+		}
+
 		this.bindings = bindings;
 
 		// Legacy Support
@@ -60,7 +61,61 @@ Try refreshing the website. or contact the website owner`);
 			return controls;
 		}, {});
 		this.heldButtons = [];
+
 	}
+
+
+
+	SkyRemote.buttons = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'sky', 'tv-guide', 'box-office', 'services', 'interactive', 'i', 'up', 'left', 'down', 'right', 'select', 'channel-up', 'channel-down', 'backup', 'help', 'red', 'green', 'yellow', 'blue'];
+	SkyRemote.createBindings = function () {
+		let bindings = [];
+		let b = 0;
+
+		console.log("[SKY REMOTE] First button:", SkyRemote.buttons[b]);
+
+		document.addEventListener("keyup", e => {
+			let button = SkyRemote.buttons[b];
+			let binding = bindings.find(b => b.button == button);
+			if (!binding) {
+				console.log("[SKY REMOTE] Setting up new button");
+				binding = {
+					button,
+					keys: [],
+					keyCodes: [],
+					function: this.toLegacyFunction(button)
+				};
+				bindings.push(binding);
+			}
+			if (e.key == "End") {
+				b++;
+				b %= buttons.length;
+				console.log("[SKY REMOTE] Progress:", bindings);
+				console.log("[SKY REMOTE] Next Button:", SkyRemote.buttons[b]);
+
+			} else {
+				console.log("[SKY REMOTE] Adding new binding for " + button + ":", e.key, e.keyCode);
+				binding.keys.push(e.key);
+				binding.keyCodes.push(e.keyCode);
+			}
+		});
+	};
+
+	SkyRemote.triggerEvent = function (event, key, element = document) {
+		if (!event) {
+			console.error("[SKY REMOTE] No event was provided");
+			return;
+		}
+		if (!key) {
+			console.error("[SKY REMOTE] No key was provided");
+			return;
+		}
+		element.dispatchEvent(new KeyboardEvent(event, {
+			keyCode: key,
+			bubbles: true,
+			cancelable: true,
+			composed: true
+		}));
+	};
 
 	SkyRemote.prototype.version = VERSION;
 
@@ -71,19 +126,27 @@ Version: ${this.version.join(".")} (${IS_THIS_USERSCRIPT_DEV ? "Development" : I
 	};
 
 	SkyRemote.prototype.listButtons = function () {
-		return Object.keys(this.remote);
+		return SkyRemote.buttons;
 	};
-	SkyRemote.prototype.holdButton - function (btn) {
+	SkyRemote.prototype.holdButton = function (btn, element = document) {
+		if (!btn) {
+			console.error("[SKY REMOTE] No button was provided");
+			return;
+		}
 		if (this.listButtons().includes(btn)) {
 			let keyCode = this.remote[btn];
 			heldButtons[keyCode] = true;
-			triggerEvent("keydown", keyCode);
+			SkyRemote.triggerEvent("keydown", keyCode, element);
 		}
 	};
-	SkyRemote.prototype.releaseButton = function (btn) {
+	SkyRemote.prototype.releaseButton = function (btn, element = document) {
+		if (!btn) {
+			console.error("[SKY REMOTE] No button was provided");
+			return;
+		}
 		let keyCode = this.remote[btn];
 		if (heldButtons[keyCode]) {
-			triggerEvent("keyup", keyCode);
+			SkyRemote.triggerEvent("keyup", keyCode, element);
 			heldButtons[keyCode] = false;
 
 
@@ -95,20 +158,99 @@ Version: ${this.version.join(".")} (${IS_THIS_USERSCRIPT_DEV ? "Development" : I
 			}
 		}
 	};
-	SkyRemote.prototype.pressButton = function (btn) {
-		this.holdButton(btn);
-		setTimeout(() => this.releaseButton(btn), 500);
+
+	SkyRemote.prototype.getBinding = function (btn) {
+		if (!btn) {
+			console.error("[SKY REMOTE] No button was provided");
+			return;
+		}
+		return this.bindings.find(b => b.button == btn);
+	};
+
+	SkyRemote.prototype.pressButton = function (btn, element = document) {
+		if (!btn) {
+			console.error("[SKY REMOTE] No button was provided");
+			return;
+		}
+		this.holdButton(btn, element);
+		setTimeout(() => this.releaseButton(btn, element), 500);
+	};
+
+	SkyRemote.prototype.onHoldButton = function (btn, func, element = document) {
+		if (!btn) {
+			console.error("[SKY REMOTE] No button was provided");
+			return;
+		}
+		if (!func) {
+			console.error("[SKY REMOTE] No function was provided");
+			return;
+		}
+		let binding = this.getBinding(btn);
+		element.addEventListener("keydown", event => {
+			if (binding.keys.includes(event.key) || binding.keyCodes.includes(event.keyCode)) {
+				func.call(this, event);
+			}
+		});
+	};
+	SkyRemote.prototype.onReleaseButton = function (btn, func, element = document) {
+		if (!btn) {
+			console.error("[SKY REMOTE] No button was provided");
+			return;
+		}
+		if (!func) {
+			console.error("[SKY REMOTE] No function was provided");
+			return;
+		}
+		let binding = this.getBinding(btn);
+		element.addEventListener("keyup", event => {
+			if (binding.keys.includes(event.key) || binding.keyCodes.includes(event.keyCode)) {
+				func.call(this, event);
+			}
+		});
+	};
+	SkyRemote.prototype.onPressButton = function (btn, func, element = document) {
+		if (!btn) {
+			console.error("[SKY REMOTE] No button was provided");
+			return;
+		}
+		if (!func) {
+			console.error("[SKY REMOTE] No function was provided");
+			return;
+		}
+		let binding = this.getBinding(btn);
+		element.addEventListener("keypress", event => {
+			if (binding.keys.includes(event.key) || binding.keyCodes.includes(event.keyCode)) {
+				func.call(this, event);
+			}
+		});
 	};
 
 
 	SkyRemote.prototype.createSkyRemote = function (funcs) {
+		console.warn(`[SKY REMOTE] SkyRemote.createSkyRemote will be deprecated for;
+- SkyRemote.onHoldButton(btn,function(event){
+
+  })
+- SkyRemote.onPressButton(btn,function(event){
+
+  })
+- SkyRemote.onReleaseButton(btn,function(event){
+
+  })
+Please contact the website owner of this change if you can.`);
+		if (!funcs) {
+			console.error("[SKY REMOTE] No functions were provided.");
+			return;
+		}
 		let controls = this.bindings;
 
-		document.addEventListener("keyup", event => {
-			for (const control of controls)
-				if (control.keys.includes(event.key) && control.function && funcs[control.function])
-					funcs[control.function]();
-		});
+		for (const control of controls) {
+			let func = this.toLegacyFunction(control.button);
+			if (func && funcs[func]) {
+				this.onPressButton(control.button, funcs[func]);
+			}
+
+		}
 	};
 
 	/**
@@ -117,42 +259,11 @@ Version: ${this.version.join(".")} (${IS_THIS_USERSCRIPT_DEV ? "Development" : I
 	 * @returns
 	 */
 	SkyRemote.prototype.toLegacyFunction = function (btn) {
+		if (!btn) {
+			console.error("[SKY REMOTE] No button was provided");
+			return;
+		}
 		return "press" + btn.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join("");
-	};
-
-	SkyRemote.prototype.createBindings = function () {
-		let buttons = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'sky', 'tv-guide', 'box-office', 'services', 'interactive', 'i', 'up', 'left', 'down', 'right', 'select', 'channel-up', 'channel-down', 'backup', 'help', 'red', 'green', 'yellow', 'blue'];
-		let bindings = [];
-		let b = 0;
-
-		console.log("First button:", buttons[b]);
-
-		document.addEventListener("keyup", e => {
-			console.log("keyup", e);
-			let button = buttons[b];
-			let binding = bindings.find(b => b.title == button);
-			if (!binding) {
-				console.log("Setting up new button");
-				binding = {
-					title: button,
-					keys: [],
-					keyCodes: [],
-					function: this.toLegacyFunction(button)
-				};
-				bindings.push(binding);
-			}
-			if (e.key == "End") {
-				b++;
-				b %= buttons.length;
-				console.log("Progress:", bindings);
-				console.log("Next Button:", buttons[b]);
-
-			} else {
-				console.log("Adding new binding for " + button + ":", e.key, e.keyCode);
-				binding.keys.push(e.key);
-				binding.keyCodes.push(e.keyCode);
-			}
-		});
 	};
 
 	uWindow.SkyRemote = new SkyRemote([
