@@ -43,6 +43,7 @@ Try reinstalling this mod.`);
 Try refreshing the website. or contact the website owner`);
 				break;
 		}
+return;
 	}
 
 
