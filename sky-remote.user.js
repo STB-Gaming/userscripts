@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         STBG Sky Remote API
 // @namespace    https://stb-gaming.github.io
-// @version      1.3.1
+// @version      1.3.2
 // @description  The ultimate Sky Remote API (hopefully) containing everything to simulate a sky remote in your browser
 // @author       Tumble
 // @run-at       document-start
@@ -177,14 +177,6 @@ Version: ${SkyRemote.version.join(".")} (${IS_THIS_USERSCRIPT_DEV ? "Development
 		if (this.heldButtons[keyCode]) {
 			SkyRemote.triggerEvent("keyup", keyCode, element);
 			this.heldButtons[keyCode] = false;
-
-
-			let fnName = "press" + btn.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join("");
-			if (uWindow[fnName])
-				uWindow[fnName].call();
-			if (typeof BeehiveBedlam !== "undefined" && typeof BeehiveBedlam[fnName] !== "undefined") {
-				BeehiveBedlam[fnName].call();
-			}
 		}
 	};
 
@@ -280,8 +272,7 @@ Please contact the website owner of this change if you can.`);
 			],
 			"keyCodes": [
 				48
-			],
-			"function": "press0"
+			]
 		},
 		{
 			"button": "1",
@@ -290,8 +281,7 @@ Please contact the website owner of this change if you can.`);
 			],
 			"keyCodes": [
 				49
-			],
-			"function": "press1"
+			]
 		},
 		{
 			"button": "2",
@@ -300,8 +290,7 @@ Please contact the website owner of this change if you can.`);
 			],
 			"keyCodes": [
 				50
-			],
-			"function": "press2"
+			]
 		},
 		{
 			"button": "3",
@@ -330,8 +319,7 @@ Please contact the website owner of this change if you can.`);
 			],
 			"keyCodes": [
 				53
-			],
-			"function": "press5"
+			]
 		},
 		{
 			"button": "6",
@@ -340,8 +328,7 @@ Please contact the website owner of this change if you can.`);
 			],
 			"keyCodes": [
 				54
-			],
-			"function": "press6"
+			]
 		},
 		{
 			"button": "7",
@@ -360,8 +347,7 @@ Please contact the website owner of this change if you can.`);
 			],
 			"keyCodes": [
 				56
-			],
-			"function": "press8"
+			]
 		},
 		{
 			"button": "9",
@@ -370,8 +356,7 @@ Please contact the website owner of this change if you can.`);
 			],
 			"keyCodes": [
 				57
-			],
-			"function": "press9"
+			]
 		},
 		{
 			"button": "sky",
@@ -380,8 +365,7 @@ Please contact the website owner of this change if you can.`);
 			],
 			"keyCodes": [
 				27
-			],
-			"function": "pressSky"
+			]
 		},
 		{
 			"button": "tv-guide",
@@ -390,8 +374,7 @@ Please contact the website owner of this change if you can.`);
 			],
 			"keyCodes": [
 				65
-			],
-			"function": "pressTvGuide"
+			]
 		},
 		{
 			"button": "box-office",
@@ -401,7 +384,6 @@ Please contact the website owner of this change if you can.`);
 			"keyCodes": [
 				83
 			],
-			"function": "pressBoxOffice"
 		},
 		{
 			"button": "services",
@@ -410,8 +392,7 @@ Please contact the website owner of this change if you can.`);
 			],
 			"keyCodes": [
 				68
-			],
-			"function": "pressServices"
+			]
 		},
 		{
 			"button": "interactive",
@@ -420,8 +401,7 @@ Please contact the website owner of this change if you can.`);
 			],
 			"keyCodes": [
 				70
-			],
-			"function": "pressInteractive"
+			]
 		},
 		{
 			"button": "i",
@@ -442,8 +422,7 @@ Please contact the website owner of this change if you can.`);
 			"keyCodes": [
 				38,
 				73
-			],
-			"function": "pressUp"
+			]
 		},
 		{
 			"button": "left",
@@ -454,8 +433,7 @@ Please contact the website owner of this change if you can.`);
 			"keyCodes": [
 				37,
 				74
-			],
-			"function": "pressLeft"
+			]
 		},
 		{
 			"button": "down",
@@ -467,7 +445,6 @@ Please contact the website owner of this change if you can.`);
 				40,
 				75
 			],
-			"function": "pressDown"
 		},
 		{
 			"button": "right",
@@ -479,7 +456,6 @@ Please contact the website owner of this change if you can.`);
 				39,
 				76
 			],
-			"function": "pressRight"
 		},
 		{
 			"button": "select",
@@ -491,7 +467,6 @@ Please contact the website owner of this change if you can.`);
 				32,
 				13
 			],
-			"function": "pressSelect"
 		},
 		{
 			"button": "channel-up",
@@ -501,7 +476,6 @@ Please contact the website owner of this change if you can.`);
 			"keyCodes": [
 				33
 			],
-			"function": "pressChannelUp"
 		},
 		{
 			"button": "channel-down",
@@ -511,7 +485,6 @@ Please contact the website owner of this change if you can.`);
 			"keyCodes": [
 				34
 			],
-			"function": "pressChannelDown"
 		},
 		{
 			"button": "backup",
@@ -520,8 +493,7 @@ Please contact the website owner of this change if you can.`);
 			],
 			"keyCodes": [
 				8
-			],
-			"function": "pressBackup"
+			]
 		},
 		{
 			"button": "help",
@@ -530,8 +502,7 @@ Please contact the website owner of this change if you can.`);
 			],
 			"keyCodes": [
 				84
-			],
-			"function": "pressHelp"
+			]
 		},
 		{
 			"button": "red",
@@ -540,8 +511,7 @@ Please contact the website owner of this change if you can.`);
 			],
 			"keyCodes": [
 				81
-			],
-			"function": "pressRed"
+			]
 		},
 		{
 			"button": "green",
@@ -550,8 +520,7 @@ Please contact the website owner of this change if you can.`);
 			],
 			"keyCodes": [
 				87
-			],
-			"function": "pressGreen"
+			]
 		},
 		{
 			"button": "yellow",
@@ -560,8 +529,7 @@ Please contact the website owner of this change if you can.`);
 			],
 			"keyCodes": [
 				69
-			],
-			"function": "pressYellow"
+			]
 		},
 		{
 			"button": "blue",
@@ -570,8 +538,7 @@ Please contact the website owner of this change if you can.`);
 			],
 			"keyCodes": [
 				82
-			],
-			"function": "pressBlue"
+			]
 		}
 	]);
 })();
