@@ -26,7 +26,7 @@
 
 	if (uWindow.SkyRemote) {
 		let comp = (a, b) => (a < b) - (b < a);
-		switch (comp(uWindow.SkyRemote.version, VERSION)) {
+		switch (comp(uWindow.SkyRemote.constructor.version, VERSION)) {
 			case 1: // this is newer
 				console.warn(`[SKY REMOTE] There are userscripts that are using an older version of the sky remote api.
 Try reinstalling all active userscripts.`);
@@ -117,17 +117,28 @@ Try refreshing the website. or contact the website owner`);
 		}));
 	};
 
-	SkyRemote.prototype.version = VERSION;
+	SkyRemote.version = VERSION;
 
 	SkyRemote.prototype.printVersionInfo = function () {
 		console.log(`[STB Gaming Sky Remote API]
 Created by: Tumble
-Version: ${this.version.join(".")} (${IS_THIS_USERSCRIPT_DEV ? "Development" : IS_THIS_USERSCRIPT ? "Userscript" : IS_USERSCRIPT ? "Userscript @require" : "Website <script>"})`);
+Version: ${SkyRemote.version.join(".")} (${IS_THIS_USERSCRIPT_DEV ? "Development" : IS_THIS_USERSCRIPT ? "Userscript" : IS_USERSCRIPT ? "Userscript @require" : "Website <script>"})`);
 	};
 
 	SkyRemote.prototype.listButtons = function () {
 		return SkyRemote.buttons;
 	};
+
+
+	SkyRemote.prototype.getBinding = function (btn) {
+		if (!btn) {
+			console.error("[SKY REMOTE] No button was provided");
+			return;
+		}
+		return this.bindings.find(b => b.button == btn);
+	};
+
+
 	SkyRemote.prototype.holdButton = function (btn, element = document) {
 		if (!btn) {
 			console.error("[SKY REMOTE] No button was provided");
@@ -139,6 +150,24 @@ Version: ${this.version.join(".")} (${IS_THIS_USERSCRIPT_DEV ? "Development" : I
 			SkyRemote.triggerEvent("keydown", keyCode, element);
 		}
 	};
+
+	SkyRemote.prototype.onHoldButton = function (btn, func, element = document) {
+		if (!btn) {
+			console.error("[SKY REMOTE] No button was provided");
+			return;
+		}
+		if (!func) {
+			console.error("[SKY REMOTE] No function was provided");
+			return;
+		}
+		let binding = this.getBinding(btn);
+		element.addEventListener("keydown", event => {
+			if (binding.keys.includes(event.key) || binding.keyCodes.includes(event.keyCode)) {
+				func.call(this, event);
+			}
+		});
+	};
+
 	SkyRemote.prototype.releaseButton = function (btn, element = document) {
 		if (!btn) {
 			console.error("[SKY REMOTE] No button was provided");
@@ -159,39 +188,7 @@ Version: ${this.version.join(".")} (${IS_THIS_USERSCRIPT_DEV ? "Development" : I
 		}
 	};
 
-	SkyRemote.prototype.getBinding = function (btn) {
-		if (!btn) {
-			console.error("[SKY REMOTE] No button was provided");
-			return;
-		}
-		return this.bindings.find(b => b.button == btn);
-	};
 
-	SkyRemote.prototype.pressButton = function (btn, element = document) {
-		if (!btn) {
-			console.error("[SKY REMOTE] No button was provided");
-			return;
-		}
-		this.holdButton(btn, element);
-		setTimeout(() => this.releaseButton(btn, element), 500);
-	};
-
-	SkyRemote.prototype.onHoldButton = function (btn, func, element = document) {
-		if (!btn) {
-			console.error("[SKY REMOTE] No button was provided");
-			return;
-		}
-		if (!func) {
-			console.error("[SKY REMOTE] No function was provided");
-			return;
-		}
-		let binding = this.getBinding(btn);
-		element.addEventListener("keydown", event => {
-			if (binding.keys.includes(event.key) || binding.keyCodes.includes(event.keyCode)) {
-				func.call(this, event);
-			}
-		});
-	};
 	SkyRemote.prototype.onReleaseButton = function (btn, func, element = document) {
 		if (!btn) {
 			console.error("[SKY REMOTE] No button was provided");
@@ -207,6 +204,15 @@ Version: ${this.version.join(".")} (${IS_THIS_USERSCRIPT_DEV ? "Development" : I
 				func.call(this, event);
 			}
 		});
+	};
+
+	SkyRemote.prototype.pressButton = function (btn, element = document) {
+		if (!btn) {
+			console.error("[SKY REMOTE] No button was provided");
+			return;
+		}
+		this.holdButton(btn, element);
+		setTimeout(() => this.releaseButton(btn, element), 500);
 	};
 	SkyRemote.prototype.onPressButton = function (btn, func, element = document) {
 		if (!btn) {
