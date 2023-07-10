@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         STBG Beehive Bedlam
 // @namespace    https://stb-gaming.github.io
-// @version      0.1.3
+// @version      0.1.4
 // @description  A userscript that makes the online Beehive Bedlam remake compatible with STBG's standardised controls
 // @author       tumble1999
 // @run-at       document-start
@@ -309,17 +309,15 @@
 			});
 		}, 2000);
 		if (typeof SkyRemote === "undefined") {
-			console.log("Sky Remote API is eequired");
+			console.log("Sky Remote API is required");
 		} else {
 			console.log("Setting up sky remote");
-			SkyRemote.createSkyRemote({
-				pressUp,
-				pressDown,
-				pressLeft,
-				pressRight,
-				pressSelect,
-				pressBack
-			});
+			SkyRemote.onReleaseButton("up", pressUp);
+			SkyRemote.onReleaseButton("down", pressDown);
+			SkyRemote.onReleaseButton("left", pressLeft);
+			SkyRemote.onReleaseButton("right", pressRight);
+			SkyRemote.onReleaseButton("select", pressSelect);
+			SkyRemote.onReleaseButton("back", pressBack);
 		}
 
 	});
