@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         STBG Beehive Bedlam
 // @namespace    https://stb-gaming.github.io
-// @version      0.1.5
+// @version      0.1.6
 // @description  A userscript that makes the online Beehive Bedlam remake compatible with STBG's standardised controls
 // @author       tumble1999
 // @run-at       document-start
@@ -36,7 +36,20 @@
 				game: { x: 0.54, y: 0.45, width: 0.21, height: 0.04 },
 				menu: { x: 0.54, y: 0.5, width: 0.21, height: 0.05 },
 			}
-		}, menuPos = 0, currentAngle = 0, state, lastMousePos = { x: .5, y: .5 };
+		}, menuPos = 0, gameState, lastMousePos = { x: .5, y: .5 },
+		CATAPULT_STATE = {
+			STILL: 0,
+			LEFT: 1,
+			RIGHT: 2
+		},
+		catapult = {
+			state: CATAPULT_STATE.STILL,
+			angularVelocity: 0,
+			acceleration: 0,
+			maxRotationSpeed: 0,
+			animationFrame: undefined,
+			currentAngle: 0
+		};
 
 	function sendMouseEvent(event, { x, y } = lastMousePos) {
 		if (void 0 == x || void 0 == y) {
@@ -118,7 +131,7 @@
 		updateBounds();
 	}
 
-	function gotoGamePos(pos) {
+	function setCatapultAngle(pos) {
 		if (typeof canvas == 'undefined') return;
 		bounds = canvas.getBoundingClientRect();
 		let origin = { x: .66, y: .67 },
@@ -136,16 +149,67 @@
 		});
 	}
 
-	function moveGamePos(degDeta) {
-		gotoGamePos(currentAngle += degDeta);
+	function setCatapultState(state) {
+		/*
+		REFERENCE (credit: Aaron from denki)
+
+		TODO: 	Implement this
+
+			if (psCatapult->eState == CATAPULT_STATE_ROTATE_LEFT || psCatapult->eState == CATAPULT_STATE_ROTATE_RIGHT)
+			{
+				if (psCatapult->dwAngularVelocity < (int) psCatapult->udwMaxRotationSpeed)
+					psCatapult->dwAngularVelocity += psCatapult->udwAcceleration;
+			}
+
+			if (psCatapult->eState == CATAPULT_STATE_ROTATE_LEFT)
+				Catapult_SetAngle(psCatapult, psCatapult->udwAngle - psCatapult->dwAngularVelocity);
+			else
+			{
+				if (psCatapult->eState == CATAPULT_STATE_ROTATE_RIGHT)
+					Catapult_SetAngle(psCatapult, psCatapult->udwAngle + psCatapult->dwAngularVelocity);
+			}
+
+		*/
+
+		catapult.state = state;
+
+		if (catapult.state == CATAPULT_STATE.STILL || gameState != "game") {
+			catapult.state = CATAPULT_STATE.STILL;
+			cancelAnimationFrame(catapult.animationFrame);
+			catapult.animationFrame = null;
+			console.log("no loop");
+			return;
+		}
+
+		if (catapult.animationFrame) return;
+
+
+		//console.log("looping");
+		let getTime = () => Date.now() / 1000;
+		let lastTime = getTime();
+		let loop = () => {
+			let deltaTime = getTime() - lastTime;
+			lastTime += deltaTime;
+			console.log("fps", 1 / deltaTime);
+
+			moveGamePos(state == CATAPULT_STATE.LEFT ? -.02 : .02);
+			catapult.animationFrame = requestAnimationFrame(loop);
+		};
+		loop();
+	}
+
+
+	function moveGamePos(anDeta) {
+		setCatapultAngle(catapult.currentAngle += anDeta);
 	}
 
 	function startGame() {
-		console.log("new state", state);
+		console.log("new state", gameState);
 		console.log("Starting Game");
-		currentAngle = 0;
+		catapult.state = CATAPULT_STATE.STILL;
+		catapult.currentAngle = 0;
 		mouseDown({ x: .5, y: .5 });
-		gotoGamePos(0);
+		setCatapultAngle(0);
 	}
 
 	async function skipToGame() {
@@ -155,9 +219,9 @@
 	}
 
 	function updateMenuPos() {
-		console.log("new state", state);
-		if (!["menu", "options", "pause"].includes(state)) return;
-		let menuOptions = Object.values(positions[state]);
+		console.log("new state", gameState);
+		if (!["menu", "options", "pause"].includes(gameState)) return;
+		let menuOptions = Object.values(positions[gameState]);
 		if (menuPos < 0) {
 			menuPos = 0;
 		}
@@ -173,7 +237,7 @@
 	}
 
 	function pressUp() {
-		switch (state) {
+		switch (gameState) {
 			case "menu":
 			case "options":
 			case "pause":
@@ -185,7 +249,7 @@
 	}
 
 	function pressDown() {
-		switch (state) {
+		switch (gameState) {
 			case "menu":
 			case "options":
 			case "pause":
@@ -196,26 +260,26 @@
 
 	}
 
-	function pressLeft() {
-		if (state == "game") {
-			moveGamePos(-.05);
+	function holdLeft() {
+		if (gameState == "game") {
+			setCatapultState(CATAPULT_STATE.LEFT);
 		}
 	}
 
-	function pressRight() {
-		if (state == "game") {
-			moveGamePos(.05);
+	function holdRight() {
+		if (gameState == "game") {
+			setCatapultState(CATAPULT_STATE.RIGHT);
 		}
 	}
 
 	async function pressSelect() {
 
-		if (state == "game") {
+		if (gameState == "game") {
 
 			mouseUp();
 			setTimeout(() => {
 				mouseDown();
-				gotoGamePos(currentAngle);
+				setCatapultAngle(currentAngle);
 			}, 500);
 		} else {
 			click();
@@ -249,7 +313,7 @@
 	}
 
 	async function pressBack() {
-		if (state == "game") {
+		if (gameState == "game") {
 			mouseUp();
 			await click(positions.game.pause);
 		}
@@ -264,8 +328,8 @@
 			console.log("Collected canvas");
 
 			canvas.addEventListener("mouseup", e => {
-				if (!state) {
-					state = "menu";
+				if (!gameState) {
+					gameState = "menu";
 					updateMenuPos();
 					return;
 				}
@@ -277,7 +341,7 @@
 					y: (e.clientY - bounds.top) / bounds.height,
 				};
 
-				let menu = positions[state];
+				let menu = positions[gameState];
 				for (let option in menu) {
 					let pos = menu[option];
 					console.log(mouse, "vs", pos);
@@ -285,21 +349,21 @@
 						mouse.x > pos.x && mouse.x < pos.x + pos.width &&
 						mouse.y > pos.y && mouse.y < pos.y + pos.height
 					) {
-						switch (state) {
+						switch (gameState) {
 							case "menu":
 							case "pause":
 							case "game":
-								state = option;
+								gameState = option;
 								menuPos = 0;
 								break;
 							case "options":
 								if (option == "back") {
-									state = "menu";
+									gameState = "menu";
 								}
 								menuPos = 0;
 								break;
 						}
-						if (state == "game")
+						if (gameState == "game")
 							startGame();
 						else
 							updateMenuPos();
@@ -314,8 +378,10 @@
 			console.log("Setting up sky remote");
 			SkyRemote.onReleaseButton("up", pressUp);
 			SkyRemote.onReleaseButton("down", pressDown);
-			SkyRemote.onReleaseButton("left", pressLeft);
-			SkyRemote.onReleaseButton("right", pressRight);
+			SkyRemote.onHoldButton("left", holdLeft);
+			SkyRemote.onReleaseButton("left", () => setCatapultState(CATAPULT_STATE.STILL));
+			SkyRemote.onHoldButton("right", holdRight);
+			SkyRemote.onReleaseButton("right", () => setCatapultState(CATAPULT_STATE.STILL));
 			SkyRemote.onReleaseButton("select", pressSelect);
 			SkyRemote.onReleaseButton("backup", pressBack);
 		}
@@ -330,10 +396,9 @@
 		collectPos,
 		startGame,
 		mouseMove,
-		gotoGamePos,
+		gotoGamePos: setCatapultAngle,
 		moveGamePos,
-		skipToGame,
-		pressLeft, pressRight, pressUp, pressDown, pressSelect, pressBack, state
+		skipToGame, pressUp, pressDown, pressSelect, pressBack, state: gameState
 	};
 
 	uWindow.BeehiveBedlam = BeehiveBedlam;
