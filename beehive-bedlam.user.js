@@ -18,35 +18,43 @@
 
 	const DEG_TO_RAD = 2 * Math.pi / 180,
 		E_GAME_STATE = {
-			NONE: 0,
-			MENU: 1,
-			OPTIONS: 2,
-			PAUSE: 3,
-			GAME: 4
+			NONE: "0",
+			GAME: "1",
+			MENU: "2",
+			LEVEL_SELECT: "3",
+			OPTIONS: "4",
+			PAUSE: "5",
 		},
 		E_CATAPULT_STATE = {
 			STILL: 0,
 			LEFT: 1,
 			RIGHT: 2
 		}, positions = {
-			startGame: { x: .5, y: .5 },
 			[E_GAME_STATE.MENU]: {
-				game: { x: 0.24, y: 0.69, width: 0.22, height: 0.04 },
-				//selectLevel:{x: 0.24, y: 0.74, width: 0.22, height: 0.04}, // too big of a menu to implement
-				options: { x: 0.24, y: 0.79, width: 0.22, height: 0.04 }
+				[E_GAME_STATE.GAME]: { x: 0.24, y: 0.69, width: 0.22, height: 0.04 },
+				[E_GAME_STATE.LEVEL_SELECT]: { x: 0.24, y: 0.74, width: 0.22, height: 0.04 }, // too big of a menu to implement
+				[E_GAME_STATE.OPTIONS]: { x: 0.24, y: 0.79, width: 0.22, height: 0.04 }
+			},
+			[E_GAME_STATE.LEVEL_SELECT]: {
+				[E_GAME_STATE.MENU]: { "x": 0.38, "y": 0.77, "width": 0.21, "height": 0.05 }
 			},
 			[E_GAME_STATE.OPTIONS]: {
-				back: { x: 0.24, y: 0.56, width: 0.22, height: 0.04 },
+				[E_GAME_STATE.MENU]: { x: 0.24, y: 0.56, width: 0.22, height: 0.04 },
 				music: { x: 0.24, y: 0.61, width: 0.22, height: 0.04 },
 				fullscreen: { x: 0.24, y: 0.66, width: 0.22, height: 0.04 },
-				colors: { x: 0.24, y: 0.71, width: 0.22, height: 0.04 },
+				colors: { x: 0.24, y: 0.71, width: 0.22, height: 0.04 }
 			},
 			[E_GAME_STATE.GAME]: {
-				pause: { x: 0.06, y: 0.83, width: 0.21, height: 0.04 }
+				[E_GAME_STATE.PAUSE]: {
+					"x": 0.06,
+					"y": 0.83,
+					"width": 0.21,
+					"height": 0.04
+				},
 			},
 			[E_GAME_STATE.PAUSE]: {
-				game: { x: 0.54, y: 0.45, width: 0.21, height: 0.04 },
-				menu: { x: 0.54, y: 0.5, width: 0.21, height: 0.05 },
+				[E_GAME_STATE.GAME]: { x: 0.54, y: 0.45, width: 0.21, height: 0.04 },
+				[E_GAME_STATE.MENU]: { x: 0.54, y: 0.5, width: 0.21, height: 0.05 },
 			}
 		};
 
@@ -168,7 +176,7 @@
 			catapult.state = E_CATAPULT_STATE.STILL;
 			cancelAnimationFrame(catapult.animationFrame);
 			catapult.animationFrame = null;
-			console.log("no loop");
+			//console.log("no loop");
 			return;
 		}
 
@@ -210,12 +218,11 @@
 			if (catapult.state = E_CATAPULT_STATE.RIGHT)
 				setCatapultAngle(catapult.currentAngle + catapult.angularVelocity);
 
-			//moveGamePos(state == CATAPULT_STATE.LEFT ? -.02 : .02);
 			catapult.animationFrame = requestAnimationFrame(loop);
 		};
 		loop();
 	};
-=
+
 	function startGame() {
 		console.log("new state", gameState);
 		console.log("Starting Game");
@@ -225,15 +232,9 @@
 		setCatapultAngle(0);
 	}
 
-	async function skipToGame() {
-		await click(positions.startGame);
-		await click(positions.menu.startGame);
-		startGame();
-	}
-
 	function updateMenuPos() {
-		console.log("new state", gameState);
-		if (![E_GAME_STATE.MENU, E_GAME_STATE.OPTIONS, E_GAME_STATE.PAUSE].includes(gameState)) return;
+		console.log("new state", Object.keys(E_GAME_STATE)[Object.values(E_GAME_STATE).findIndex(s => s == gameState)]);
+		if (![E_GAME_STATE.MENU, E_GAME_STATE.OPTIONS, E_GAME_STATE.PAUSE, E_GAME_STATE.LEVEL_SELECT].includes(gameState)) return;
 		let menuOptions = Object.values(positions[gameState]);
 		if (menuPos < 0) {
 			menuPos = 0;
@@ -250,25 +251,17 @@
 	}
 
 	function pressUp() {
-		switch (gameState) {
-			case E_GAME_STATE.MENU:
-			case E_GAME_STATE.OPTIONS:
-			case E_GAME_STATE.PAUSE:
-				menuPos--;
-				updateMenuPos();
-				break;
+		if ([E_GAME_STATE.MENU, E_GAME_STATE.OPTIONS, E_GAME_STATE.PAUSE, E_GAME_STATE.LEVEL_SELECT].includes(gameState)) {
+			menuPos--;
+			updateMenuPos();
 		}
 
 	}
 
 	function pressDown() {
-		switch (gameState) {
-			case E_GAME_STATE.MENU:
-			case E_GAME_STATE.OPTIONS:
-			case E_GAME_STATE.PAUSE:
-				menuPos++;
-				updateMenuPos();
-				break;
+		if ([E_GAME_STATE.MENU, E_GAME_STATE.OPTIONS, E_GAME_STATE.PAUSE, E_GAME_STATE.LEVEL_SELECT].includes(gameState)) {
+			menuPos++;
+			updateMenuPos();
 		}
 
 	}
@@ -286,38 +279,27 @@
 	}
 
 	async function pressSelect() {
-
 		if (gameState == E_GAME_STATE.GAME) {
-
 			mouseUp();
 			setTimeout(() => {
 				mouseDown();
-				setCatapultAngle(currentAngle);
+				gotoGamePos(currentAngle);
 			}, 500);
+
 		} else {
 			click();
 		}
-		switch (state) {
-			case E_GAME_STATE.MENU:
-			case E_GAME_STATE.OPTIONS:
-			case E_GAME_STATE.PAUSE:
-				menuPos = 0;
-				break;
-			case E_GAME_STATE.GAME:
-				mouseUp();
-				setTimeout(() => {
-					mouseDown();
-					gotoGamePos(currentAngle);
-				}, 500);
-				break;
-		}
+
+		// if ([E_GAME_STATE.MENU, E_GAME_STATE.OPTIONS, E_GAME_STATE.PAUSE].includes(gameState)) {
+		// 	menuPos = 0;
+		// }
 
 	}
 
 	async function pressBack() {
 		if (gameState == E_GAME_STATE.GAME) {
 			mouseUp();
-			await click(positions.game.pause);
+			await click(positions[gameState][E_GAME_STATE.PAUSE]);
 		}
 	}
 
@@ -330,11 +312,12 @@
 			console.log("Collected canvas");
 
 			canvas.addEventListener("mouseup", e => {
-				if (!gameState) {
+				if (gameState == E_GAME_STATE.NONE) {
 					gameState = E_GAME_STATE.MENU;
 					updateMenuPos();
 					return;
 				}
+
 
 
 				bounds = canvas.getBoundingClientRect();
@@ -346,26 +329,14 @@
 				let menu = positions[gameState];
 				for (let option in menu) {
 					let pos = menu[option];
-					console.log(mouse, "vs", pos);
 					if (
 						mouse.x > pos.x && mouse.x < pos.x + pos.width &&
 						mouse.y > pos.y && mouse.y < pos.y + pos.height
 					) {
-						switch (gameState) {
-
-							case E_GAME_STATE.MENU:
-							case E_GAME_STATE.PAUSE:
-							case E_GAME_STATE.GAME:
-								gameState = option;
-								menuPos = 0;
-								break;
-
-							case E_GAME_STATE.OPTIONS:
-								if (option == "back") {
-									gameState = E_GAME_STATE.OPTIONS;
-								}
-								menuPos = 0;
-								break;
+						console.log("selectec", option);
+						if (Object.values(E_GAME_STATE).includes(option)) {
+							gameState = option;
+							menuPos = 0;
 						}
 						if (gameState == E_GAME_STATE.GAME)
 							startGame();
@@ -401,7 +372,7 @@
 		startGame,
 		mouseMove,
 		setCatapultAngle,
-		skipToGame, pressUp, pressDown, pressSelect, pressBack, gameState
+		pressUp, pressDown, pressSelect, pressBack, gameState
 	};
 
 	uWindow.BeehiveBedlam = BeehiveBedlam;
