@@ -207,6 +207,7 @@ Version: ${SkyRemote.version.join(".")} (${IS_THIS_USERSCRIPT_DEV ? "Development
 		this.holdButton(btn, element);
 		setTimeout(() => this.releaseButton(btn, element), 500);
 	};
+
 	SkyRemote.prototype.onPressButton = function (btn, func, element = document) {
 		if (!btn) {
 			console.error("[SKY REMOTE] No button was provided");
@@ -217,11 +218,18 @@ Version: ${SkyRemote.version.join(".")} (${IS_THIS_USERSCRIPT_DEV ? "Development
 			return;
 		}
 		let binding = this.getBinding(btn);
-		element.addEventListener("keypress", event => {
-			if (binding.keys.includes(event.key) || binding.keyCodes.includes(event.keyCode)) {
-				func.call(this, event);
+
+		let handler = e => {
+			if (binding.keys.includes(e.key) || binding.keyCodes.includes(e.keyCode)) {
+				func.call(this, e);
 			}
+		};
+
+		element.addEventListener("keyup", e => {
+			if (e.key == e.code) { handler(e); }
 		});
+
+		element.addEventListener("keypress", handler);
 	};
 
 
