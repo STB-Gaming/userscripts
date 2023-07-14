@@ -21,7 +21,7 @@
 	const IS_USERSCRIPT = typeof GM_info != 'undefined';
 	const IS_THIS_USERSCRIPT = IS_USERSCRIPT ? GM_info.script.name == 'STBG Sky Remote API' : false;
 	const IS_THIS_USERSCRIPT_DEV = IS_THIS_USERSCRIPT && GM_info.scriptUpdateURL.startsWith("file://");
-	const VERSION = [1, 3, 3];
+	const VERSION = [1, 3, 4];
 
 
 	if (uWindow.SkyRemote) {
