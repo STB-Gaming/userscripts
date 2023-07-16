@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         STBG Beehive Bedlam
 // @namespace    https://stb-gaming.github.io
-// @version      0.2.1
+// @version      0.2.2
 // @description  A userscript that makes the online Beehive Bedlam remake compatible with STBG's standardised controls
 // @author       tumble1999
 // @run-at       document-start
@@ -16,7 +16,7 @@
 	const uWindow = typeof unsafeWindow != 'undefined' ? unsafeWindow : window;
 	if (typeof uWindow.BeehiveBedlam !== "undefined" || location.href !== "https://beehive-bedlam.com/") return;
 
-	const DEG_TO_RAD = 2 * Math.pi / 180,
+	const DEG_TO_RAD = Math.PI/180,
 		E_GAME_STATE = {
 			NONE: "0",
 			GAME: "1",
@@ -60,17 +60,18 @@
 
 	let canvas, bounds,
 		menuPos = 0, gameState = E_GAME_STATE.NONE, lastMousePos = { x: .5, y: .5 },
+		debugMouse,
 		catapult = {
 			state: E_CATAPULT_STATE.STILL,
 			angularVelocity: 0,
-			acceleration: 24,
-			maxRotationSpeed: 576,
+			acceleration: .03,
+			maxRotationSpeed: 5,
 			animationFrame: undefined,
 			currentAngle: 0
 		};
 
-	function sendMouseEvent(event, { x, y } = lastMousePos) {
-		if (void 0 == x || void 0 == y) {
+	function sendMouseEvent(event, { x, y } = {}) {
+		if (!x || !y) {
 			x = lastMousePos.x;
 			y = lastMousePos.y;
 		};
@@ -79,10 +80,14 @@
 			return;
 		}
 		bounds = canvas.getBoundingClientRect();
+		let cx = bounds.left + x * bounds.width
+		let cy = bounds.top + y * bounds.height
 		canvas.dispatchEvent(new MouseEvent(event, {
-			clientX: bounds.left + x * bounds.width,
-			clientY: bounds.top + y * bounds.height
+			clientX: cx,
+			clientY: cy
 		}));
+		//debugMouse.style.left = cx;
+		//debugMouse.style.top = cy;
 		lastMousePos = { x, y };
 	}
 
@@ -143,7 +148,7 @@
 			//console.log(pos);
 		});
 		uWindow.addEventListener("keyup", e => {
-			console.log(e.key);
+			//console.log(e.key);
 			if (e.key == "b") updateBounds(true);
 		});
 		updateBounds();
@@ -151,20 +156,24 @@
 
 	function setCatapultAngle(deg) {
 		if (typeof canvas == 'undefined') return;
+		console.log("setting angle to", deg);
 		bounds = canvas.getBoundingClientRect();
+		catapult.currentAngle = deg
 		let rad = deg * DEG_TO_RAD;
 		let origin = { x: .66, y: .67 },
 			radius = {
-				x: .14 * bounds.width,
-				y: .53 * bounds.height
+				x: .14,
+				y: .53 ,
 			},
 			unit = {
-				x: Math.sin(rad * Math.PI / 2),
-				y: -Math.cos(rad * Math.PI / 2)
+				x: Math.sin(rad),
+				y: -Math.cos(rad)
 			};
+
+			console.log({rad,origin,radius,unit});
 		mouseMove({
-			x: origin.x + unit.x * radius.x / bounds.width,
-			y: origin.y + unit.y * radius.y / bounds.height
+			x: origin.x + unit.x * radius.x ,
+			y: origin.y + unit.y * radius.y
 		});
 	}
 
@@ -176,14 +185,13 @@
 			catapult.state = E_CATAPULT_STATE.STILL;
 			cancelAnimationFrame(catapult.animationFrame);
 			catapult.animationFrame = null;
+			catapult.angularVelocity = 0;
 			//console.log("no loop");
 			return;
 		}
 
 		if (catapult.animationFrame) return;
 
-
-		//console.log("looping");
 		let getTime = () => Date.now() / 1000;
 		let lastTime = getTime();
 		let loop = () => {
@@ -212,10 +220,11 @@
 			if (catapult.state == E_CATAPULT_STATE.LEFT || catapult.state == E_CATAPULT_STATE.RIGHT)
 				if (catapult.angularVelocity < catapult.maxRotationSpeed)
 					catapult.angularVelocity += catapult.acceleration;
+			console.log(catapult);
 
-			if (catapult.state = E_CATAPULT_STATE.LEFT)
+			if (catapult.state == E_CATAPULT_STATE.LEFT)
 				setCatapultAngle(catapult.currentAngle - catapult.angularVelocity);
-			if (catapult.state = E_CATAPULT_STATE.RIGHT)
+			if (catapult.state == E_CATAPULT_STATE.RIGHT)
 				setCatapultAngle(catapult.currentAngle + catapult.angularVelocity);
 
 			catapult.animationFrame = requestAnimationFrame(loop);
@@ -233,8 +242,7 @@
 	}
 
 	function updateMenuPos() {
-		console.log("new state", Object.keys(E_GAME_STATE)[Object.values(E_GAME_STATE).findIndex(s => s == gameState)]);
-		if (![E_GAME_STATE.MENU, E_GAME_STATE.OPTIONS, E_GAME_STATE.PAUSE, E_GAME_STATE.LEVEL_SELECT].includes(gameState)) return;
+		//if (![E_GAME_STATE.MENU, E_GAME_STATE.OPTIONS, E_GAME_STATE.PAUSE, E_GAME_STATE.LEVEL_SELECT].includes(gameState)) return;
 		let menuOptions = Object.values(positions[gameState]);
 		if (menuPos < 0) {
 			menuPos = 0;
@@ -281,13 +289,14 @@
 	async function pressSelect() {
 		if (gameState == E_GAME_STATE.GAME) {
 			mouseUp();
+			await click();
 			setTimeout(() => {
 				mouseDown();
-				gotoGamePos(currentAngle);
+				setCatapultAngle(catapult.currentAngle);
 			}, 500);
 
 		} else {
-			click();
+			await click();
 		}
 
 		// if ([E_GAME_STATE.MENU, E_GAME_STATE.OPTIONS, E_GAME_STATE.PAUSE].includes(gameState)) {
@@ -299,7 +308,8 @@
 	async function pressBack() {
 		if (gameState == E_GAME_STATE.GAME) {
 			mouseUp();
-			await click(positions[gameState][E_GAME_STATE.PAUSE]);
+			updateMenuPos();
+			click();
 		}
 	}
 
@@ -311,13 +321,14 @@
 			if (typeof canvas == 'undefined') return;
 			console.log("Collected canvas");
 
+			//debugMouse = createDot();
+
 			canvas.addEventListener("mouseup", e => {
 				if (gameState == E_GAME_STATE.NONE) {
 					gameState = E_GAME_STATE.MENU;
-					updateMenuPos();
+					setTimeout(updateMenuPos,0)
 					return;
 				}
-
 
 
 				bounds = canvas.getBoundingClientRect();
@@ -333,15 +344,16 @@
 						mouse.x > pos.x && mouse.x < pos.x + pos.width &&
 						mouse.y > pos.y && mouse.y < pos.y + pos.height
 					) {
-						console.log("selectec", option);
+						//console.log("selected", option);
 						if (Object.values(E_GAME_STATE).includes(option)) {
 							gameState = option;
 							menuPos = 0;
+							//console.log("new state", Object.keys(E_GAME_STATE)[Object.values(E_GAME_STATE).findIndex(s => s == gameState)]);
 						}
 						if (gameState == E_GAME_STATE.GAME)
-							startGame();
+							setTimeout(startGame,0)
 						else
-							updateMenuPos();
+							setTimeout(updateMenuPos,0)
 						break;
 					}
 				}
@@ -363,6 +375,27 @@
 
 	});
 
+	window.addEventListener("resize",()=>{
+	if(gameState == E_GAME_STATE.GAME) {
+		setCatapultAngle(catapult.currentAngle)
+	} else {
+		updateMenuPos();
+	}
+	})
+
+
+	function createDot() {
+		let dot = document.createElement("span");
+		dot.style.background = "magenta"
+		dot.style.width="10px"
+		dot.style.height="10px"
+		dot.style.position="absolute"
+		dot.style.translate = "-50% -50%"
+		document.body.appendChild(dot);
+		return dot;
+	}
+
+
 	let BeehiveBedlam = {
 		positions,
 		mouseDown,
@@ -372,7 +405,7 @@
 		startGame,
 		mouseMove,
 		setCatapultAngle,
-		pressUp, pressDown, pressSelect, pressBack, gameState
+		pressUp, pressDown, pressSelect, pressBack, gameState,updateMenuPos,catapult
 	};
 
 	uWindow.BeehiveBedlam = BeehiveBedlam;
