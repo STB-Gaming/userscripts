@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         STBG Beehive Bedlam
 // @namespace    https://stb-gaming.github.io
-// @version      0.2.2
+// @version      0.2.3
 // @description  A userscript that makes the online Beehive Bedlam remake compatible with STBG's standardised controls
 // @author       tumble1999
 // @run-at       document-start
@@ -86,8 +86,8 @@
 			clientX: cx,
 			clientY: cy
 		}));
-		//debugMouse.style.left = cx;
-		//debugMouse.style.top = cy;
+		debugMouse.style.left = cx;
+		debugMouse.style.top = cy;
 		lastMousePos = { x, y };
 	}
 
@@ -321,7 +321,7 @@
 			if (typeof canvas == 'undefined') return;
 			console.log("Collected canvas");
 
-			//debugMouse = createDot();
+			debugMouse = createDot();
 
 			canvas.addEventListener("mouseup", e => {
 				if (gameState == E_GAME_STATE.NONE) {
@@ -392,7 +392,12 @@
 		dot.style.position="absolute"
 		dot.style.translate = "-50% -50%"
 		document.body.appendChild(dot);
+		dot.style.display = "none"
 		return dot;
+	}
+
+	function toggleDebug() {
+		debugMouse.style.display = debugMouse.style.display?null:"none"
 	}
 
 
@@ -405,7 +410,7 @@
 		startGame,
 		mouseMove,
 		setCatapultAngle,
-		pressUp, pressDown, pressSelect, pressBack, gameState,updateMenuPos,catapult
+		pressUp, pressDown, pressSelect, pressBack, gameState,updateMenuPos,catapult, toggleDebug
 	};
 
 	uWindow.BeehiveBedlam = BeehiveBedlam;
