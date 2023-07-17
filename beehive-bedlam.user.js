@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         STBG Beehive Bedlam
 // @namespace    https://stb-gaming.github.io
-// @version      0.2.3
+// @version      0.2.4
 // @description  A userscript that makes the online Beehive Bedlam remake compatible with STBG's standardised controls
 // @author       tumble1999
 // @run-at       document-start
@@ -14,10 +14,10 @@
 
 (function () {
 	'use strict';
-	const uWindow = typeof unsafeWindow != 'undefined' ? unsafeWindow : window;
-
-	const {GET_STARTED} = checkUserscript("STBG Beehive Bedlam",[0,2,3],"BeehiveBedlam");
-	if (!GET_STARTED|| location.href !== "https://beehive-bedlam.com/") return
+	const uWindow = typeof unsafeWindow != 'undefined' ? unsafeWindow : window,
+	VERSION = [0,2,3],
+	{GET_STARTED} = checkUserscript("STBG Beehive Bedlam",VERSION,"BeehiveBedlam");
+	if (!GET_STARTED/*|| location.href !== "https://beehive-bedlam.com/"*/) return
 
 	const DEG_TO_RAD = Math.PI/180,
 		E_GAME_STATE = {
@@ -70,8 +70,20 @@
 			acceleration: .03,
 			maxRotationSpeed: 5,
 			animationFrame: undefined,
-			currentAngle: 0
-		};
+			currentAngle: 0,
+			origin: { x: .66, y: .67 },
+			originSpeed: -0.0038490886692166843,
+			originDebug:null
+		},lastTime;
+
+		function canvasPosToWindowPos({x,y}) {
+
+		bounds = canvas.getBoundingClientRect();
+		return {
+		x: bounds.left + x * bounds.width,
+		y: bounds.top + y * bounds.height
+		}
+		}
 
 	function sendMouseEvent(event, { x, y } = {}) {
 		if (!x || !y) {
@@ -82,15 +94,13 @@
 			console.log("Not ready yet");
 			return;
 		}
-		bounds = canvas.getBoundingClientRect();
-		let cx = bounds.left + x * bounds.width
-		let cy = bounds.top + y * bounds.height
+		let c = canvasPosToWindowPos({x,y})
 		canvas.dispatchEvent(new MouseEvent(event, {
-			clientX: cx,
-			clientY: cy
+			clientX: c.x,
+			clientY: c.y
 		}));
-		debugMouse.style.left = cx;
-		debugMouse.style.top = cy;
+		debugMouse.style.left = c.x;
+		debugMouse.style.top = c.y;
 		lastMousePos = { x, y };
 	}
 
@@ -158,7 +168,8 @@
 	}
 
 	function collectPos() {
-		let pos, collected = {}, props = ["x", "y", "width", "height"], p = 0;
+		let pos,lastPos,lastTime,
+		getTime = () => Date.now() / 1000;
 		if (typeof canvas == 'undefined') return;
 
 		canvas.addEventListener("mousemove", e => {
@@ -170,22 +181,51 @@
 			//console.log(pos);
 		});
 		uWindow.addEventListener("keyup", e => {
-			//console.log(e.key);
-			console.log(pos.y);
+			let dx,dy,m,time,dt;
+			time = getTime();
+			if(lastPos){
+				dx = pos.x - lastPos.x;
+				dy=pos.y - lastPos.y;
+				m = Math.sqrt(dx*dx+dy*dy)
+				console.log({pos,m,dx,dy});
+			}
+			if(lastTime) {
+				dt = time - lastTime;
+				console.log({dt});
+			}
+			if(lastTime&&lastPos) {
+				let
+				sx = dx/dt,
+				sy = dy/dt,
+				s = m/dt;
+				console.log({sx,sy,s});
+			}
+			else
+			console.log(pos);
+
+			lastPos = pos;
+			lastTime = time
 		});
-		updateBounds();
 	}
 
 	function setCatapultAngle(deg) {
 		if (typeof canvas == 'undefined') return;
+
+		let angleMax = 71;
+		if(deg>angleMax) {
+			deg = angleMax
+		}
+		if(deg<-angleMax) {
+			deg = -angleMax
+	}
 		console.log("setting angle to", deg);
 		bounds = canvas.getBoundingClientRect();
 		catapult.currentAngle = deg
 		let rad = deg * DEG_TO_RAD;
-		let origin = { x: .66, y: .67 },
+		let origin = catapult.origin,
 			radius = {
 				x: .14,
-				y: .53 ,
+				y: .14 ,
 			},
 			unit = {
 				x: Math.sin(rad),
@@ -215,12 +255,21 @@
 		if (catapult.animationFrame) return;
 
 		let getTime = () => Date.now() / 1000;
-		let lastTime = getTime();
+		if(!lastTime) lastTime = getTime();
 		let loop = () => {
 
 			let deltaTime = getTime() - lastTime;
 			lastTime += deltaTime;
+
 			console.log("fps", 1 / deltaTime);
+
+
+			//Move origin
+			catapult.origin.y += catapult.originSpeed * deltaTime;
+			let o = canvasPosToWindowPos(catapult.origin);
+			catapult.originDebug.style.left = o.x;
+			catapult.originDebug.style.top = o.y;
+
 			/*
 			REFERENCE (credit: Aaron from denki)
 
@@ -344,6 +393,7 @@
 			console.log("Collected canvas");
 
 			debugMouse = createDot();
+			catapult.originDebug = createDot()
 
 			canvas.addEventListener("mouseup", e => {
 				if (gameState == E_GAME_STATE.NONE) {
@@ -420,15 +470,17 @@
 
 	function toggleDebug() {
 		debugMouse.style.display = debugMouse.style.display?null:"none"
+		catapult.originDebug.style.display = catapult.originDebug.style.display?null:"none"
 	}
 
 
 	let BeehiveBedlam = {
+		version:VERSION,
 		positions,
 		mouseDown,
 		mouseUp,
 		click,
-		collectPos: collectBound,
+		collectPos,collectBound,
 		startGame,
 		mouseMove,
 		setCatapultAngle,
