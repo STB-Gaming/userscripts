@@ -6,6 +6,7 @@
 // @author       tumble1999
 // @run-at       document-start
 // @match        https://beehive-bedlam.com/*
+// @match        http://localhost:8080/
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=beehive-bedlam.com/
 // @require      https://github.com/STB-Gaming/userscripts/raw/master/sky-remote.user.js
 // ==/UserScript==
@@ -14,7 +15,9 @@
 (function () {
 	'use strict';
 	const uWindow = typeof unsafeWindow != 'undefined' ? unsafeWindow : window;
-	if (typeof uWindow.BeehiveBedlam !== "undefined" || location.href !== "https://beehive-bedlam.com/") return;
+
+	const {GET_STARTED} = checkUserscript("STBG Beehive Bedlam",[0,2,3],"BeehiveBedlam");
+	if (!GET_STARTED|| location.href !== "https://beehive-bedlam.com/") return
 
 	const DEG_TO_RAD = Math.PI/180,
 		E_GAME_STATE = {
@@ -115,7 +118,7 @@
 		});
 	}
 
-	function collectPos() {
+	function collectBound() {
 		let pos, collected = {}, props = ["x", "y", "width", "height"], p = 0;
 		if (typeof canvas == 'undefined') return;
 
@@ -150,6 +153,25 @@
 		uWindow.addEventListener("keyup", e => {
 			//console.log(e.key);
 			if (e.key == "b") updateBounds(true);
+		});
+		updateBounds();
+	}
+
+	function collectPos() {
+		let pos, collected = {}, props = ["x", "y", "width", "height"], p = 0;
+		if (typeof canvas == 'undefined') return;
+
+		canvas.addEventListener("mousemove", e => {
+			bounds = canvas.getBoundingClientRect();
+			pos = {
+				x: (e.clientX - bounds.left) / bounds.width,
+				y: (e.clientY - bounds.top) / bounds.height,
+			};
+			//console.log(pos);
+		});
+		uWindow.addEventListener("keyup", e => {
+			//console.log(e.key);
+			console.log(pos.y);
 		});
 		updateBounds();
 	}
@@ -406,7 +428,7 @@
 		mouseDown,
 		mouseUp,
 		click,
-		collectPos,
+		collectPos: collectBound,
 		startGame,
 		mouseMove,
 		setCatapultAngle,

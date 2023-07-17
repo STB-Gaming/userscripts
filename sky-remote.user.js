@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         STBG Sky Remote API
 // @namespace    https://stb-gaming.github.io
-// @version      1.3.4
+// @version      1.3.5
 // @description  The ultimate Sky Remote API (hopefully) containing everything to simulate a sky remote in your browser
 // @author       Tumble
 // @run-at       document-start
@@ -14,37 +14,68 @@
 // @require      https://github.com/STB-Gaming/userscripts/raw/master/beehive-bedlam.user.js
 // ==/UserScript==
 
+(function () {
+	'use strict';
+
+	const uWindow = typeof unsafeWindow != 'undefined' ? unsafeWindow : window;
+
+	function checkUserscript(name,VERSION, windowObjectName=name) {
+		const IS_USERSCRIPT = typeof GM_info != 'undefined',
+			IS_THIS_USERSCRIPT = IS_USERSCRIPT ? GM_info.script.name == name : false,
+			IS_THIS_USERSCRIPT_DEV = IS_THIS_USERSCRIPT && GM_info.scriptUpdateURL.startsWith("file://"),
+			GET_STARTED = !uWindow[windowObjectName];
+
+
+		if (!GET_STARTED) {
+			let comp = (a=[0,0,0], b=[0,0,0]) => (a < b) - (b < a);
+			switch (comp(uWindow[windowObjectName].version, VERSION)) {
+				case 1: // this is newer
+					console.warn(`There are userscripts that are using an older version of '${name}'.
+	Try reinstalling all active userscripts.`);
+					break;
+				case -1: // this is older
+					if (IS_THIS_USERSCRIPT)
+						console.warn(` The '${name}' (the userscript) is out of date.
+	Update this userscript.`);
+					else if (IS_USERSCRIPT)
+						console.warn(`'${GM_info.script.name}' using an older version of '${name}'.
+	Try reinstalling this mod.`);
+					else
+						console.warn(`This website using an older version of '${name}'.
+	Try refreshing the website. or contact the website owner`);
+					break;
+			}
+		} else {
+			uWindow[windowObjectName] = {version:VERSION}
+		}
+
+		return {
+			IS_USERSCRIPT,
+			IS_THIS_USERSCRIPT,
+			IS_THIS_USERSCRIPT_DEV,
+			GET_STARTED
+		}
+	}
+
+	const VERSION = [0,1,0],
+	{GET_STARTED} = checkUserscript("STBG Check Userscript",VERSION,"checkUserscript");
+
+
+	if(GET_STARTED) {
+		checkUserscript.version = VERSION
+		uWindow.checkUserscript = checkUserscript;
+	}
+
+})();
+
 
 (function () {
 	'use strict';
 	const uWindow = typeof unsafeWindow != 'undefined' ? unsafeWindow : window;
-	const IS_USERSCRIPT = typeof GM_info != 'undefined';
-	const IS_THIS_USERSCRIPT = IS_USERSCRIPT ? GM_info.script.name == 'STBG Sky Remote API' : false;
-	const IS_THIS_USERSCRIPT_DEV = IS_THIS_USERSCRIPT && GM_info.scriptUpdateURL.startsWith("file://");
-	const VERSION = [1, 3, 4];
+	const VERSION = [1, 3, 5];
 
-
-	if (uWindow.SkyRemote) {
-		let comp = (a, b) => (a < b) - (b < a);
-		switch (comp(uWindow.SkyRemote.constructor.version, VERSION)) {
-			case 1: // this is newer
-				console.warn(`[SKY REMOTE] There are userscripts that are using an older version of the sky remote api.
-Try reinstalling all active userscripts.`);
-				break;
-			case -1: // this is older
-				if (IS_THIS_USERSCRIPT)
-					console.warn(`[SKY REMOTE] The 'STBG Sky Remote API' (the userscript) is out of date.
-Update this userscript.`);
-				else if (IS_USERSCRIPT)
-					console.warn(`[SKY REMOTE] '${GM_info.script.name}' using an older version of the sky remote api.
-Try reinstalling this mod.`);
-				else
-					console.warn(`[SKY REMOTE] This website using an older version of the sky remote api.
-Try refreshing the website. or contact the website owner`);
-				break;
-		}
-		return;
-	}
+	const {IS_THIS_USERSCRIPT,IS_THIS_USERSCRIPT_DEV,IS_USERSCRIPT,GET_STARTED} = checkUserscript("STBG Sky Remote API",VERSION,"SkyRemote")
+	if(!GET_STARTED) return;
 
 
 	function SkyRemote(bindings) {
@@ -118,7 +149,7 @@ Try refreshing the website. or contact the website owner`);
 		}));
 	};
 
-	SkyRemote.version = VERSION;
+	SkyRemote.prototype.version = VERSION;
 
 	SkyRemote.prototype.printVersionInfo = function () {
 		console.log(`[STB Gaming Sky Remote API]
