@@ -12,10 +12,7 @@ Userscripts to make Denki's online Sky Games ports more accessible to a range of
 
 ### Android
 1. Install [Firefox](https://play.google.com/store/apps/details?id=org.mozilla.firefox)
-2. Click the hamburger button in the bottom-right corner, go to _Settings_ > _About_ > _About Firefox_ and enable the debug menu by tapping the logo five times.
-3. Go back to the settings menu. You should see a new _Advanced_ category, click on _Add-ons_, find Tampermonkey and add it to your browser
-4. From this page, click the link to the raw userscript you want to install.
-5. Tampermonkey should open a new tab in the browser. Scroll down and click _Install_ and confirm.
+2. Install [Tampermonkey](https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/)
 ### iOS
 > TBA
 ### FireTV
