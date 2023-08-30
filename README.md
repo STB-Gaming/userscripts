@@ -6,7 +6,7 @@ Userscripts to make Denki's online Sky Games ports more accessible to a range of
 ## Installation
 
 ### PC
-[Instructions](/stb-gaming/.github/wiki/Windows,Mac,Linux)
+[Instructions](https://github.com/stb-gaming/.github/wiki/Windows,Mac,Linux)
 ### Android
 1. Install [Firefox](https://play.google.com/store/apps/details?id=org.mozilla.firefox)
 2. Install [Tampermonkey](https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/)
