@@ -10,9 +10,9 @@ Userscripts to make Denki's online Sky Games ports more accessible to a range of
 ### Android
 [Instructions](https://github.com/stb-gaming/.github/wiki/Android)
 ### iOS
-> TBA
+[Instructions](https://github.com/stb-gaming/.github/wiki/iOS)
 ### FireTV
-> TBA (possibly same as Android, however Firefox should be installed from an APK as it is no longer supported on FireTV)
+[Instructions](https://github.com/stb-gaming/.github/wiki/FireTV)
 
 ## Controller Support
 > [gamepad-support.user.js](https://github.com/STB-Gaming/userscripts/raw/master/gamepad-support.user.js)
