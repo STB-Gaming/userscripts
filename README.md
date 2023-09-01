@@ -3,6 +3,8 @@ Userscripts to make Denki's online Sky Games ports more accessible to a range of
 
 ---
 
+[Compatability Matrix](https://docs.google.com/spreadsheets/d/1HnZB-g4U8niy6Czyebj7p1Khgdf2e0OugheU_ZX6uvM/edit?usp=sharing)
+
 ## Installation
 
 ### PC
