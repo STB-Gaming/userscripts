@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         STBG Sky Remote API
 // @namespace    https://stb-gaming.github.io
-// @version      1.3.5
+// @version      1.3.6
 // @description  The ultimate Sky Remote API (hopefully) containing everything to simulate a sky remote in your browser
 // @author       Tumble
 // @run-at       document-start
@@ -19,7 +19,7 @@
 
 	const uWindow = typeof unsafeWindow != 'undefined' ? unsafeWindow : window;
 
-	function checkUserscript(name,VERSION, windowObjectName=name) {
+	function checkUserscript(name, VERSION, windowObjectName = name) {
 		const IS_USERSCRIPT = typeof GM_info != 'undefined',
 			IS_THIS_USERSCRIPT = IS_USERSCRIPT ? GM_info.script.name == name : false,
 			IS_THIS_USERSCRIPT_DEV = IS_THIS_USERSCRIPT && GM_info.scriptUpdateURL.startsWith("file://"),
@@ -27,7 +27,7 @@
 
 
 		if (!GET_STARTED) {
-			let comp = (a=[0,0,0], b=[0,0,0]) => (a < b) - (b < a);
+			let comp = (a = [0, 0, 0], b = [0, 0, 0]) => (a < b) - (b < a);
 			switch (comp(uWindow[windowObjectName].version, VERSION)) {
 				case 1: // this is newer
 					console.warn(`There are userscripts that are using an older version of '${name}'.
@@ -46,7 +46,7 @@
 					break;
 			}
 		} else {
-			uWindow[windowObjectName] = {version:VERSION}
+			uWindow[windowObjectName] = { version: VERSION };
 		}
 
 		return {
@@ -54,15 +54,15 @@
 			IS_THIS_USERSCRIPT,
 			IS_THIS_USERSCRIPT_DEV,
 			GET_STARTED
-		}
+		};
 	}
 
-	const VERSION = [0,1,0],
-	{GET_STARTED} = checkUserscript("STBG Check Userscript",VERSION,"checkUserscript");
+	const VERSION = [0, 1, 0],
+		{ GET_STARTED } = checkUserscript("STBG Check Userscript", VERSION, "checkUserscript");
 
 
-	if(GET_STARTED) {
-		checkUserscript.version = VERSION
+	if (GET_STARTED) {
+		checkUserscript.version = VERSION;
 		uWindow.checkUserscript = checkUserscript;
 	}
 
@@ -74,8 +74,8 @@
 	const uWindow = typeof unsafeWindow != 'undefined' ? unsafeWindow : window;
 	const VERSION = [1, 3, 5];
 
-	const {IS_THIS_USERSCRIPT,IS_THIS_USERSCRIPT_DEV,IS_USERSCRIPT,GET_STARTED} = checkUserscript("STBG Sky Remote API",VERSION,"SkyRemote")
-	if(!GET_STARTED) return;
+	const { IS_THIS_USERSCRIPT, IS_THIS_USERSCRIPT_DEV, IS_USERSCRIPT, GET_STARTED } = checkUserscript("STBG Sky Remote API", VERSION, "SkyRemote");
+	if (!GET_STARTED) return;
 
 
 	function SkyRemote(bindings) {
@@ -132,7 +132,7 @@
 		});
 	};
 
-	SkyRemote.triggerEvent = function (event, key, element = document) {
+	SkyRemote.triggerEvent = function (event, key, element = document, message) {
 		if (!event) {
 			console.error("[SKY REMOTE] No event was provided");
 			return;
@@ -141,12 +141,16 @@
 			console.error("[SKY REMOTE] No key was provided");
 			return;
 		}
-		element.dispatchEvent(new KeyboardEvent(event, {
+		const eventParams = [event, {
 			keyCode: key,
 			bubbles: true,
 			cancelable: true,
 			composed: true
-		}));
+		}];
+		if (message && element instanceof Window)
+			element.postMessage(eventParams);
+		else
+			element.dispatchEvent(new KeyboardEvent(...eventParams));
 	};
 
 	SkyRemote.prototype.version = VERSION;
@@ -171,7 +175,7 @@ Version: ${SkyRemote.version.join(".")} (${IS_THIS_USERSCRIPT_DEV ? "Development
 	};
 
 
-	SkyRemote.prototype.holdButton = function (btn, element = document) {
+	SkyRemote.prototype.holdButton = function (btn, element = document, message) {
 		if (!btn) {
 			console.error("[SKY REMOTE] No button was provided");
 			return;
@@ -179,7 +183,7 @@ Version: ${SkyRemote.version.join(".")} (${IS_THIS_USERSCRIPT_DEV ? "Development
 		if (this.listButtons().includes(btn)) {
 			let keyCode = this.remote[btn];
 			this.heldButtons[keyCode] = true;
-			SkyRemote.triggerEvent("keydown", keyCode, element);
+			SkyRemote.triggerEvent("keydown", keyCode, element, message);
 		}
 	};
 
@@ -200,14 +204,14 @@ Version: ${SkyRemote.version.join(".")} (${IS_THIS_USERSCRIPT_DEV ? "Development
 		});
 	};
 
-	SkyRemote.prototype.releaseButton = function (btn, element = document) {
+	SkyRemote.prototype.releaseButton = function (btn, element = document, message) {
 		if (!btn) {
 			console.error("[SKY REMOTE] No button was provided");
 			return;
 		}
 		let keyCode = this.remote[btn];
 		if (this.heldButtons[keyCode]) {
-			SkyRemote.triggerEvent("keyup", keyCode, element);
+			SkyRemote.triggerEvent("keyup", keyCode, element, message);
 			this.heldButtons[keyCode] = false;
 		}
 	};
@@ -230,13 +234,13 @@ Version: ${SkyRemote.version.join(".")} (${IS_THIS_USERSCRIPT_DEV ? "Development
 		});
 	};
 
-	SkyRemote.prototype.pressButton = function (btn, element = document) {
+	SkyRemote.prototype.pressButton = function (btn, element = document, message) {
 		if (!btn) {
 			console.error("[SKY REMOTE] No button was provided");
 			return;
 		}
-		this.holdButton(btn, element);
-		setTimeout(() => this.releaseButton(btn, element), 500);
+		this.holdButton(btn, element, message);
+		setTimeout(() => this.releaseButton(btn, element), 500, message);
 	};
 
 	SkyRemote.prototype.onPressButton = function (btn, func, element = document) {
