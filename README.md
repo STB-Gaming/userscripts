@@ -3,20 +3,18 @@ Userscripts to make Denki's online Sky Games ports more accessible to a range of
 
 ---
 
+[Compatability Matrix](https://docs.google.com/spreadsheets/d/1HnZB-g4U8niy6Czyebj7p1Khgdf2e0OugheU_ZX6uvM/edit?usp=sharing)
+
 ## Installation
 
 ### PC
-1. Install [Tampermonkey](https://www.tampermonkey.net/)
-2. Click the link to the userscript you want to install
-3. Tampermonkey should open a new tab with the userscript. Click _Install_ and confirm
-
+[Instructions](https://github.com/stb-gaming/.github/wiki/Windows,Mac,Linux)
 ### Android
-1. Install [Firefox](https://play.google.com/store/apps/details?id=org.mozilla.firefox)
-2. Install [Tampermonkey](https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/)
+[Instructions](https://github.com/stb-gaming/.github/wiki/Android)
 ### iOS
-> TBA
+[Instructions](https://github.com/stb-gaming/.github/wiki/iOS)
 ### FireTV
-> TBA (possibly same as Android, however Firefox should be installed from an APK as it is no longer supported on FireTV)
+[Instructions](https://github.com/stb-gaming/.github/wiki/FireTV)
 
 ## Controller Support
 > [gamepad-support.user.js](https://github.com/STB-Gaming/userscripts/raw/master/gamepad-support.user.js)
