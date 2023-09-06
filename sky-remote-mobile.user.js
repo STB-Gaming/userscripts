@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         STBG Mobile Interface
 // @namespace    https://stb-gaming.github.io
-// @version      0.1.9
+// @version      0.1.10
 // @description  A userscript that adds a button layout based on the Sky Gamepad to mobile browsers, adding touch support for mobile devices
 // @author       tumble1999
 // @run-at       document-start
@@ -63,6 +63,7 @@ canvas {
 }
 #sky-remote-container {
     grid-area: controls;
+	position:relative;
 
 }
 
@@ -70,7 +71,6 @@ canvas {
 	    position: relative;
     bottom: 0;
     background-color: gray;
-    z-index: 100;
     height: 100%;
     /* width: 100vw; */
     touch-action: none;
@@ -115,7 +115,7 @@ p {
 	pointer-events: none;
 	width: 184px;
 	height: 184px;
-	z-index: 100;
+	z-index: 1;
 	background-color: turquoise;
 	border-radius: 50%;
 	background-size: 165px;
@@ -248,6 +248,7 @@ p {
     width: 80px;
     height: 35px;
 	text-align:center;
+	z-index:3;
 }
 
 #sky-remote-green {
@@ -269,12 +270,13 @@ p {
 }
 #game-log-container {
     position: absolute;
+top:0;
     left: 0;
-	bottom: 50vh;
-    height: 50vh;
+    height: 100%;
     width: 100vw;
     background-color: white;
 	font-family: monospace;
+	z-index:2;
 
  display: flex;
 flex-direction: column-reverse;
@@ -283,6 +285,7 @@ justify-content: flex-start;
 }
 
 #game-log p {
+display:block;
 	margin: 0;
     border: solid 0.15em;
 	border-color: #ffffff;
