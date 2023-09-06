@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         STBG Sky Remote API
 // @namespace    https://stb-gaming.github.io
-// @version      1.3.8
+// @version      1.3.9
 // @description  The ultimate Sky Remote API (hopefully) containing everything to simulate a sky remote in your browser
 // @author       Tumble
 // @run-at       document-start
@@ -132,7 +132,7 @@
 		});
 	};
 
-	SkyRemote.triggerEvent = function (event, key, element = document, origin) {
+	SkyRemote.triggerEvent = function (event, key, element = document, destination) {
 		if (!event) {
 			console.error("[SKY REMOTE] No event was provided");
 			return;
@@ -147,8 +147,9 @@
 			cancelable: true,
 			composed: true
 		}];
-		if (origin) {
-			if (typeof origin !== "string") origin = "https://denki.co.uk";
+		if (destination) {
+			if (typeof destination !== "string") origin = "https://denki.co.uk";
+			if (!(element instanceof Window)) element = window.frames[0];
 			element.postMessage(eventParams, origin);
 		}
 		else
@@ -177,7 +178,7 @@ Version: ${SkyRemote.version.join(".")} (${IS_THIS_USERSCRIPT_DEV ? "Development
 	};
 
 
-	SkyRemote.prototype.holdButton = function (btn, element = document, message) {
+	SkyRemote.prototype.holdButton = function (btn, element = document, destination) {
 		if (!btn) {
 			console.error("[SKY REMOTE] No button was provided");
 			return;
@@ -185,7 +186,7 @@ Version: ${SkyRemote.version.join(".")} (${IS_THIS_USERSCRIPT_DEV ? "Development
 		if (this.listButtons().includes(btn)) {
 			let keyCode = this.remote[btn];
 			this.heldButtons[keyCode] = true;
-			SkyRemote.triggerEvent("keydown", keyCode, element, message);
+			SkyRemote.triggerEvent("keydown", keyCode, element, destination);
 		}
 	};
 
@@ -206,14 +207,14 @@ Version: ${SkyRemote.version.join(".")} (${IS_THIS_USERSCRIPT_DEV ? "Development
 		});
 	};
 
-	SkyRemote.prototype.releaseButton = function (btn, element = document, message) {
+	SkyRemote.prototype.releaseButton = function (btn, element = document, destination) {
 		if (!btn) {
 			console.error("[SKY REMOTE] No button was provided");
 			return;
 		}
 		let keyCode = this.remote[btn];
 		if (this.heldButtons[keyCode]) {
-			SkyRemote.triggerEvent("keyup", keyCode, element, message);
+			SkyRemote.triggerEvent("keyup", keyCode, element, destination);
 			this.heldButtons[keyCode] = false;
 		}
 	};
@@ -236,13 +237,13 @@ Version: ${SkyRemote.version.join(".")} (${IS_THIS_USERSCRIPT_DEV ? "Development
 		});
 	};
 
-	SkyRemote.prototype.pressButton = function (btn, element = document, message) {
+	SkyRemote.prototype.pressButton = function (btn, element = document, destination) {
 		if (!btn) {
 			console.error("[SKY REMOTE] No button was provided");
 			return;
 		}
 		this.holdButton(btn, element, message);
-		setTimeout(() => this.releaseButton(btn, element), 500, message);
+		setTimeout(() => this.releaseButton(btn, element, destination), 500);
 	};
 
 	SkyRemote.prototype.onPressButton = function (btn, func, element = document) {
