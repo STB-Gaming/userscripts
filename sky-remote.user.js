@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         STBG Sky Remote API
 // @namespace    https://stb-gaming.github.io
-// @version      1.3.11
+// @version      1.3.12
 // @description  The ultimate Sky Remote API (hopefully) containing everything to simulate a sky remote in your browser
 // @author       Tumble
 // @run-at       document-start
@@ -132,21 +132,25 @@
 		});
 	};
 
-	SkyRemote.triggerEvent = function (event, key, element = document, destination) {
-		if (!event) {
-			console.error("[SKY REMOTE] No event was provided");
-			return;
-		}
+	SkyRemote.createKeyboardEventOptions = function (key) {
 		if (!key) {
 			console.error("[SKY REMOTE] No key was provided");
 			return;
 		}
-		const eventParams = [event, {
+		return {
 			keyCode: key,
 			bubbles: true,
 			cancelable: true,
 			composed: true
-		}];
+		};
+	};
+
+	SkyRemote.triggerEvent = function (event, options, element = document, destination) {
+		if (!event) {
+			console.error("[SKY REMOTE] No event was provided");
+			return;
+		}
+		const eventParams = [event, options];
 		if (destination) {
 			if (typeof destination !== "string") origin = "https://denki.co.uk";
 			if (!(element instanceof Window)) element = window.frames[0];
@@ -159,7 +163,10 @@
 	SkyRemote.prototype.triggerEvent = SkyRemote.triggerEvent;
 
 	SkyRemote.prototype.onTriggerEvent = function (cb) {
-		this.triggerEvent = cb;
+		this.triggerEvent = (event, key, element = document, destination) => {
+			let options = SkyRemote.createKeyboardEventOptions(key);
+			cb(event, options, element, destination);
+		};
 	};
 
 	SkyRemote.prototype.version = VERSION;
