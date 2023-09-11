@@ -84,6 +84,8 @@
 			throw "[SKY REMOTE] No bindings were provided";
 		}
 
+		this.onTriggerEvent(SkyRemote.triggerEvent);
+
 		this.bindings = bindings;
 
 		// Legacy Support
@@ -152,7 +154,7 @@
 		}
 		const eventParams = [event, options];
 		if (destination) {
-			if (typeof destination !== "string") origin = "https://denki.co.uk";
+			if (typeof destination !== "string") origin = destination;
 			if (!(element instanceof Window)) element = window.frames[0];
 			element.postMessage(eventParams, origin);
 		}
@@ -160,7 +162,7 @@
 			element.dispatchEvent(new KeyboardEvent(event, options));
 	};
 
-	SkyRemote.prototype.triggerEvent = SkyRemote.triggerEvent;
+	SkyRemote.prototype.triggerEvent = null;
 
 	SkyRemote.prototype.onTriggerEvent = function (cb) {
 		this.triggerEvent = (event, key, element = document, destination) => {
