@@ -11,7 +11,6 @@
 // @match        http://localhost:4000/*
 // @match        *://*
 // @icon         https://stb-gaming.github.io/assets/img/stb-logo.webp
-// @require      https://github.com/STB-Gaming/userscripts/raw/master/beehive-bedlam.user.js
 // ==/UserScript==
 
 (function () {
