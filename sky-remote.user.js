@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         STBG Sky Remote API
 // @namespace    https://stb-gaming.github.io
-// @version      1.3.12
+// @version      1.3.13
 // @description  The ultimate Sky Remote API (hopefully) containing everything to simulate a sky remote in your browser
 // @author       Tumble
 // @run-at       document-start
@@ -85,15 +85,6 @@
 		}
 
 		this.bindings = bindings;
-
-		// Legacy Support
-		// TODO: use the bindings object instead
-		this.remote = this.bindings.reduce((controls, { button, keyCodes }) => {
-			controls[button] = keyCodes[0];
-			return controls;
-		}, {});
-		this.heldButtons = [];
-
 	}
 
 
@@ -132,13 +123,19 @@
 		});
 	};
 
-	SkyRemote.createKeyboardEventOptions = function (key) {
-		if (!key) {
-			console.error("[SKY REMOTE] No key was provided");
+	SkyRemote.createKeyboardEventOptions = function (binding) {
+		if (!binding) {
+			console.error("[SKY REMOTE] No binding was provided");
 			return;
 		}
+		const name = binding.keys[0],
+			number = binding.keyCodes[0];
+
 		return {
-			keyCode: key,
+			code: name,
+			key: name,
+			keyCode:number,
+			which:number,
 			bubbles: true,
 			cancelable: true,
 			composed: true
@@ -163,8 +160,8 @@
 	SkyRemote.prototype.triggerEvent = SkyRemote.triggerEvent;
 
 	SkyRemote.prototype.onTriggerEvent = function (cb) {
-		this.triggerEvent = (event, key, element = document, destination) => {
-			let options = SkyRemote.createKeyboardEventOptions(key);
+		this.triggerEvent = (event, binding, element = document, destination) => {
+			let options = SkyRemote.createKeyboardEventOptions(binding);
 			cb(event, options, element, destination);
 		};
 	};
@@ -197,9 +194,8 @@ Version: ${SkyRemote.version.join(".")} (${IS_THIS_USERSCRIPT_DEV ? "Development
 			return;
 		}
 		if (this.listButtons().includes(btn)) {
-			let keyCode = this.remote[btn];
-			this.heldButtons[keyCode] = true;
-			this.triggerEvent("keydown", keyCode, element, destination);
+			const binding = this.getBinding(btn);
+			this.triggerEvent("keydown", binding, element, destination);
 		}
 	};
 
@@ -225,11 +221,8 @@ Version: ${SkyRemote.version.join(".")} (${IS_THIS_USERSCRIPT_DEV ? "Development
 			console.error("[SKY REMOTE] No button was provided");
 			return;
 		}
-		let keyCode = this.remote[btn];
-		if (this.heldButtons[keyCode]) {
-			this.triggerEvent("keyup", keyCode, element, destination);
-			this.heldButtons[keyCode] = false;
-		}
+		const binding = this.getBinding(btn);
+		this.triggerEvent("keyup", keyCode, element, destination);
 	};
 
 
