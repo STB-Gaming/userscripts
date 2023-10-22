@@ -210,7 +210,7 @@ Version: ${SkyRemote.version.join(".")} (${IS_THIS_USERSCRIPT_DEV ? "Development
 		}
 		let binding = this.getBinding(btn);
 		element.addEventListener("keydown", event => {
-			if (binding.keys.includes(event.key) || binding.keyCodes.includes(event.keyCode)) {
+			if (event.isTrusted && binding.keys.includes(event.key) || binding.keyCodes.includes(event.keyCode)) {
 				func.call(this, event);
 			}
 		});
@@ -237,7 +237,7 @@ Version: ${SkyRemote.version.join(".")} (${IS_THIS_USERSCRIPT_DEV ? "Development
 		}
 		let binding = this.getBinding(btn);
 		element.addEventListener("keyup", event => {
-			if (binding.keys.includes(event.key) || binding.keyCodes.includes(event.keyCode)) {
+			if (event.isTrusted && binding.keys.includes(event.key) || binding.keyCodes.includes(event.keyCode)) {
 				func.call(this, event);
 			}
 		});
@@ -270,10 +270,12 @@ Version: ${SkyRemote.version.join(".")} (${IS_THIS_USERSCRIPT_DEV ? "Development
 		};
 
 		element.addEventListener("keyup", e => {
-			if (e.key == e.code) { handler(e); }
+			if (e.isTrusted && e.key == e.code) { handler(e); }
 		});
 
-		element.addEventListener("keypress", handler);
+		element.addEventListener("keypress", e=>{
+			if(e.isTrusted)handler(e)
+		});
 	};
 
 
