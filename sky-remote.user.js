@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         STBG Sky Remote API
 // @namespace    https://stb-gaming.github.io
-// @version      1.3.15
+// @version      1.3.16
 // @description  The ultimate Sky Remote API (hopefully) containing everything to simulate a sky remote in your browser
 // @author       Tumble
 // @run-at       document-start
@@ -104,6 +104,7 @@
 				binding = {
 					button,
 					keys: [],
+					codes: [],
 					keyCodes: []
 				};
 				bindings.push(binding);
@@ -117,6 +118,7 @@
 			} else {
 				console.log("[SKY REMOTE] Adding new binding for " + button + ":", e.key, e.keyCode);
 				binding.keys.push(e.key);
+				binding.codes.push(e.code);
 				binding.keyCodes.push(e.keyCode);
 			}
 		});
@@ -127,14 +129,15 @@
 			console.error("[SKY REMOTE] No binding was provided");
 			return;
 		}
-		const name = binding.keys[0],
-			number = binding.keyCodes[0];
+		const key = binding.keys[0],
+			code = binding.codes[0]||key,
+			keyCode = binding.keyCodes[0];
 
 		return {
-			code: name,
-			key: name,
-			keyCode:number,
-			which:number,
+			code,
+			key,
+			keyCode,
+			which:keyCode,
 			bubbles: true,
 			cancelable: true,
 			composed: true
@@ -322,7 +325,7 @@ Please contact the website owner of this change if you can.`);
 		{
 			"button": "0",
 			"keys": [
-				"0"
+				"Didgit0"
 			],
 			"keyCodes": [
 				48
@@ -331,7 +334,7 @@ Please contact the website owner of this change if you can.`);
 		{
 			"button": "1",
 			"keys": [
-				"1"
+				"Didgit1"
 			],
 			"keyCodes": [
 				49
@@ -340,7 +343,7 @@ Please contact the website owner of this change if you can.`);
 		{
 			"button": "2",
 			"keys": [
-				"2"
+				"Didgit2"
 			],
 			"keyCodes": [
 				50
@@ -349,7 +352,7 @@ Please contact the website owner of this change if you can.`);
 		{
 			"button": "3",
 			"keys": [
-				"3"
+				"Didgit3"
 			],
 			"keyCodes": [
 				51
@@ -359,7 +362,7 @@ Please contact the website owner of this change if you can.`);
 		{
 			"button": "4",
 			"keys": [
-				"4"
+				"Didgit4"
 			],
 			"keyCodes": [
 				52
@@ -369,7 +372,7 @@ Please contact the website owner of this change if you can.`);
 		{
 			"button": "5",
 			"keys": [
-				"5"
+				"Didgit5"
 			],
 			"keyCodes": [
 				53
@@ -378,7 +381,7 @@ Please contact the website owner of this change if you can.`);
 		{
 			"button": "6",
 			"keys": [
-				"6"
+				"Didgit6"
 			],
 			"keyCodes": [
 				54
@@ -387,7 +390,7 @@ Please contact the website owner of this change if you can.`);
 		{
 			"button": "7",
 			"keys": [
-				"7"
+				"Didgit7"
 			],
 			"keyCodes": [
 				55
@@ -397,7 +400,7 @@ Please contact the website owner of this change if you can.`);
 		{
 			"button": "8",
 			"keys": [
-				"8"
+				"Didgit8"
 			],
 			"keyCodes": [
 				56
@@ -406,7 +409,7 @@ Please contact the website owner of this change if you can.`);
 		{
 			"button": "9",
 			"keys": [
-				"9"
+				"Didgit9"
 			],
 			"keyCodes": [
 				57
@@ -424,7 +427,7 @@ Please contact the website owner of this change if you can.`);
 		{
 			"button": "tv-guide",
 			"keys": [
-				"a"
+				"Didgita"
 			],
 			"keyCodes": [
 				65
@@ -433,7 +436,7 @@ Please contact the website owner of this change if you can.`);
 		{
 			"button": "box-office",
 			"keys": [
-				"s"
+				"DidgitS"
 			],
 			"keyCodes": [
 				83
@@ -442,7 +445,7 @@ Please contact the website owner of this change if you can.`);
 		{
 			"button": "services",
 			"keys": [
-				"d"
+				"DidgitK"
 			],
 			"keyCodes": [
 				68
