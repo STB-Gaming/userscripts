@@ -104,8 +104,7 @@
 				binding = {
 					button,
 					keys: [],
-					keyCodes: [],
-					function: this.toLegacyFunction(button)
+					keyCodes: []
 				};
 				bindings.push(binding);
 			}
