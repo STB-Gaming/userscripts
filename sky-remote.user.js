@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         STBG Sky Remote API
 // @namespace    https://stb-gaming.github.io
-// @version      1.3.15
+// @version      1.3.16
 // @description  The ultimate Sky Remote API (hopefully) containing everything to simulate a sky remote in your browser
 // @author       Tumble
 // @run-at       document-start
@@ -11,7 +11,6 @@
 // @match        http://localhost:4000/*
 // @match        *://*
 // @icon         https://stb-gaming.github.io/assets/img/stb-logo.webp
-// @require      https://github.com/STB-Gaming/userscripts/raw/master/beehive-bedlam.user.js
 // ==/UserScript==
 
 (function () {
@@ -104,19 +103,21 @@
 				binding = {
 					button,
 					keys: [],
+					codes: [],
 					keyCodes: []
 				};
 				bindings.push(binding);
 			}
 			if (e.key == "End") {
 				b++;
-				b %= buttons.length;
-				console.log("[SKY REMOTE] Progress:", bindings);
+				b %= SkyRemote.buttons.length;
+				console.log("[SKY REMOTE] Progress:", bindings,JSON.stringify(bindings));
 				console.log("[SKY REMOTE] Next Button:", SkyRemote.buttons[b]);
 
 			} else {
 				console.log("[SKY REMOTE] Adding new binding for " + button + ":", e.key, e.keyCode);
 				binding.keys.push(e.key);
+				binding.codes.push(e.code);
 				binding.keyCodes.push(e.keyCode);
 			}
 		});
@@ -127,14 +128,17 @@
 			console.error("[SKY REMOTE] No binding was provided");
 			return;
 		}
-		const name = binding.keys[0],
-			number = binding.keyCodes[0];
+		const key = code = binding.keys[0],
+			keyCode = binding.keyCodes[0];
+			if(binding.codes&& !!binding.codes.length) {
+				code = binding.codes[0]
+			}
 
 		return {
-			code: name,
-			key: name,
-			keyCode:number,
-			which:number,
+			code,
+			key,
+			keyCode,
+			which:keyCode,
 			bubbles: true,
 			cancelable: true,
 			composed: true
@@ -322,99 +326,159 @@ Please contact the website owner of this change if you can.`);
 		{
 			"button": "0",
 			"keys": [
+				"0",
 				"0"
 			],
+			"codes": [
+				"Digit0",
+				"Numpad0"
+			],
 			"keyCodes": [
-				48
+				48,
+				96
 			]
 		},
 		{
 			"button": "1",
 			"keys": [
+				"1",
 				"1"
 			],
+			"codes": [
+				"Digit1",
+				"Numpad1"
+			],
 			"keyCodes": [
-				49
+				49,
+				97
 			]
 		},
 		{
 			"button": "2",
 			"keys": [
+				"2",
 				"2"
 			],
+			"codes": [
+				"Digit2",
+				"Numpad2"
+			],
 			"keyCodes": [
-				50
+				50,
+				98
 			]
 		},
 		{
 			"button": "3",
 			"keys": [
+				"3",
 				"3"
 			],
-			"keyCodes": [
-				51
+			"codes": [
+				"Digit3",
+				"Numpad3"
 			],
-			"function": "press3"
+			"keyCodes": [
+				51,
+				99
+			]
 		},
 		{
 			"button": "4",
 			"keys": [
+				"4",
 				"4"
 			],
-			"keyCodes": [
-				52
+			"codes": [
+				"Digit4",
+				"Numpad4"
 			],
-			"function": "press4"
+			"keyCodes": [
+				52,
+				100
+			]
 		},
 		{
 			"button": "5",
 			"keys": [
+				"5",
 				"5"
 			],
+			"codes": [
+				"Digit5",
+				"Numpad5"
+			],
 			"keyCodes": [
-				53
+				53,
+				101
 			]
 		},
 		{
 			"button": "6",
 			"keys": [
+				"6",
 				"6"
 			],
+			"codes": [
+				"Digit6",
+				"Numpad6"
+			],
 			"keyCodes": [
-				54
+				54,
+				102
 			]
 		},
 		{
 			"button": "7",
 			"keys": [
+				"7",
 				"7"
 			],
-			"keyCodes": [
-				55
+			"codes": [
+				"Digit7",
+				"Numpad7"
 			],
-			"function": "press7"
+			"keyCodes": [
+				55,
+				103
+			]
 		},
 		{
 			"button": "8",
 			"keys": [
+				"8",
 				"8"
 			],
+			"codes": [
+				"Digit8",
+				"Numpad8"
+			],
 			"keyCodes": [
-				56
+				56,
+				104
 			]
 		},
 		{
 			"button": "9",
 			"keys": [
+				"9",
 				"9"
 			],
+			"codes": [
+				"Digit9",
+				"Numpad9"
+			],
 			"keyCodes": [
-				57
+				57,
+				105
 			]
 		},
 		{
 			"button": "sky",
 			"keys": [
+				"Escape"
+			],
+			"codes": [
 				"Escape"
 			],
 			"keyCodes": [
@@ -426,6 +490,9 @@ Please contact the website owner of this change if you can.`);
 			"keys": [
 				"a"
 			],
+			"codes": [
+				"KeyA"
+			],
 			"keyCodes": [
 				65
 			]
@@ -435,14 +502,20 @@ Please contact the website owner of this change if you can.`);
 			"keys": [
 				"s"
 			],
+			"codes": [
+				"KeyS"
+			],
 			"keyCodes": [
 				83
-			],
+			]
 		},
 		{
 			"button": "services",
 			"keys": [
 				"d"
+			],
+			"codes": [
+				"KeyD"
 			],
 			"keyCodes": [
 				68
@@ -453,6 +526,9 @@ Please contact the website owner of this change if you can.`);
 			"keys": [
 				"f"
 			],
+			"codes": [
+				"KeyF"
+			],
 			"keyCodes": [
 				70
 			]
@@ -462,16 +538,22 @@ Please contact the website owner of this change if you can.`);
 			"keys": [
 				"g"
 			],
+			"codes": [
+				"KeyG"
+			],
 			"keyCodes": [
 				71
-			],
-			"function": "pressI"
+			]
 		},
 		{
 			"button": "up",
 			"keys": [
 				"ArrowUp",
 				"i"
+			],
+			"codes": [
+				"ArrowUp",
+				"KeyI"
 			],
 			"keyCodes": [
 				38,
@@ -484,6 +566,10 @@ Please contact the website owner of this change if you can.`);
 				"ArrowLeft",
 				"j"
 			],
+			"codes": [
+				"ArrowLeft",
+				"KeyJ"
+			],
 			"keyCodes": [
 				37,
 				74
@@ -495,10 +581,14 @@ Please contact the website owner of this change if you can.`);
 				"ArrowDown",
 				"k"
 			],
+			"codes": [
+				"ArrowDown",
+				"KeyK"
+			],
 			"keyCodes": [
 				40,
 				75
-			],
+			]
 		},
 		{
 			"button": "right",
@@ -506,10 +596,14 @@ Please contact the website owner of this change if you can.`);
 				"ArrowRight",
 				"l"
 			],
+			"codes": [
+				"ArrowRight",
+				"KeyL"
+			],
 			"keyCodes": [
 				39,
 				76
-			],
+			]
 		},
 		{
 			"button": "select",
@@ -517,32 +611,45 @@ Please contact the website owner of this change if you can.`);
 				" ",
 				"Enter"
 			],
+			"codes": [
+				"Space",
+				"Enter"
+			],
 			"keyCodes": [
 				32,
 				13
-			],
+			]
 		},
 		{
 			"button": "channel-up",
 			"keys": [
 				"PageUp"
 			],
+			"codes": [
+				"PageUp"
+			],
 			"keyCodes": [
 				33
-			],
+			]
 		},
 		{
 			"button": "channel-down",
 			"keys": [
 				"PageDown"
 			],
+			"codes": [
+				"PageDown"
+			],
 			"keyCodes": [
 				34
-			],
+			]
 		},
 		{
 			"button": "backup",
 			"keys": [
+				"Backspace"
+			],
+			"codes": [
 				"Backspace"
 			],
 			"keyCodes": [
@@ -554,6 +661,9 @@ Please contact the website owner of this change if you can.`);
 			"keys": [
 				"t"
 			],
+			"codes": [
+				"KeyT"
+			],
 			"keyCodes": [
 				84
 			]
@@ -562,6 +672,9 @@ Please contact the website owner of this change if you can.`);
 			"button": "red",
 			"keys": [
 				"q"
+			],
+			"codes": [
+				"KeyQ"
 			],
 			"keyCodes": [
 				81
@@ -572,6 +685,9 @@ Please contact the website owner of this change if you can.`);
 			"keys": [
 				"w"
 			],
+			"codes": [
+				"KeyW"
+			],
 			"keyCodes": [
 				87
 			]
@@ -581,6 +697,9 @@ Please contact the website owner of this change if you can.`);
 			"keys": [
 				"e"
 			],
+			"codes": [
+				"KeyE"
+			],
 			"keyCodes": [
 				69
 			]
@@ -589,6 +708,9 @@ Please contact the website owner of this change if you can.`);
 			"button": "blue",
 			"keys": [
 				"r"
+			],
+			"codes": [
+				"KeyR"
 			],
 			"keyCodes": [
 				82
