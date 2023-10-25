@@ -128,6 +128,7 @@
 			console.error("[SKY REMOTE] No binding was provided");
 			return;
 		}
+let code;
 		const key = code = binding.keys[0],
 			keyCode = binding.keyCodes[0];
 			if(binding.codes&& !!binding.codes.length) {
