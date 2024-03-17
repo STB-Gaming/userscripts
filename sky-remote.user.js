@@ -170,6 +170,24 @@ let code;
 		};
 	};
 
+	SkyRemote.prototype.onEvent = function(btn, func, event, element = document) {
+		if(!btn) {
+			console.error("No Button was specified");
+		}
+		if(!func) {
+			console.error("No function was specified");
+		}
+		if(!event) {
+			console.error("No event was specified");
+		}
+		const binding = this.getBinding(btn);
+		element.addEventListener(event, event => {
+			if (binding.keys.includes(event.key)||binding.codes.includes(event.code) || binding.keyCodes.includes(event.keyCode)) {
+				func.call(this, event);
+			}
+		});
+	}
+
 	SkyRemote.prototype.version = VERSION;
 
 	SkyRemote.prototype.printVersionInfo = function () {
@@ -212,12 +230,7 @@ Version: ${this.version.join(".")} (${IS_THIS_USERSCRIPT_DEV ? "Development" : I
 			console.error("[SKY REMOTE] No function was provided");
 			return;
 		}
-		let binding = this.getBinding(btn);
-		element.addEventListener("keydown", event => {
-			if (event.isTrusted && binding.keys.includes(event.key) || binding.keyCodes.includes(event.keyCode)) {
-				func.call(this, event);
-			}
-		});
+		this.onEvent(btn,func,"keydown",element)
 	};
 
 	SkyRemote.prototype.releaseButton = function (btn, element = document, destination) {
@@ -239,12 +252,7 @@ Version: ${this.version.join(".")} (${IS_THIS_USERSCRIPT_DEV ? "Development" : I
 			console.error("[SKY REMOTE] No function was provided");
 			return;
 		}
-		let binding = this.getBinding(btn);
-		element.addEventListener("keyup", event => {
-			if (event.isTrusted && binding.keys.includes(event.key) || binding.keyCodes.includes(event.keyCode)) {
-				func.call(this, event);
-			}
-		});
+		this.onEvent(btn,func,"keyup",element)
 	};
 
 	SkyRemote.prototype.pressButton = function (btn, element = document, destination) {
@@ -265,21 +273,8 @@ Version: ${this.version.join(".")} (${IS_THIS_USERSCRIPT_DEV ? "Development" : I
 			console.error("[SKY REMOTE] No function was provided");
 			return;
 		}
-		let binding = this.getBinding(btn);
-
-		let handler = e => {
-			if (binding.keys.includes(e.key) || binding.keyCodes.includes(e.keyCode)) {
-				func.call(this, e);
-			}
-		};
-
-		element.addEventListener("keyup", e => {
-			if (e.isTrusted && e.key == e.code) { handler(e); }
-		});
-
-		element.addEventListener("keypress", e=>{
-			if(e.isTrusted)handler(e)
-		});
+		this.onEvent(btn,handler,"keypress",element);
+		this.onEvent(btn,handler,"keyup",element);
 	};
 
 
