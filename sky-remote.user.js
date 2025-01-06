@@ -120,7 +120,7 @@
 				binding.codes.push(e.code);
 				binding.keyCodes.push(e.keyCode);
 			}
-		});
+		},NULL,"STBEVT");
 	};
 
 	SkyRemote.createKeyboardEventOptions = function (binding) {
